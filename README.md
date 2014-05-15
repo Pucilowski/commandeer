@@ -6,11 +6,23 @@ Easily define and parse text commands of format commonly used by IRC bots.
 Getting started
 ---------------
 
+The command format is given as `command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]`.
 
+The first part defines the command aliases, either a single alphanumeric word
+or multiple separated with pipe characters. What follows is the arguments, written
+as the argument name and type separated by a colon. Required arguments
+are enclosed in angle brackets while optional ones in square brackets.
+
+In the above example we also add a type that is not handled by default, `time` along with
+a method to convert text input into a relevant Java object. If it cannot be done (or if a
+checked exception is thrown), we'll throw a descriptive unchecked exception.
+ 
+Finally we register our test command.
  
 ```Java
 //define the format of the command
-private static final String COMMAND = "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
+private static final String COMMAND = 
+    "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
 
 //use builder or simply new Commandeer() to use defaults
 Commandeer cmd = new CommandeerBuilder()
@@ -29,13 +41,8 @@ Commandeer cmd = new CommandeerBuilder()
 cmd.addCommand(COMMAND);
 ```
 
-The command format was defined as `command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]`.
-
-The first part defines the command aliases, either a single alphanumeric word
-or multiple separated with pipe characters. What follows is the arguments,
-the first one is named `arg1`, it's required and can be anything at all, the
-second takes a whole number. The third takes a double while the fourth takes
-HH:mm:ss (defined in the snippet below), both of which are optional.
+In the below snippet we parse some user input and
+go through the various ways in which we can query it.
 
 ```Java
 public void process(String input) {
@@ -108,3 +115,9 @@ input: !cmd string 42 3.141 water
 input: !cmd string 42 3.141 22:52:11
 	result: Command{alias='cmd', args={arg1 (String)=string, arg2 (Integer)=42, arg3 (Double)=3.141, arg4 (Date)=Thu Jan 01 22:52:11 GMT 1970}}
 ```
+
+TODO
+----
+
+*   Callback methods
+*   

@@ -10,7 +10,8 @@ import java.util.Map;
  */
 public class Example {
     //define the format of the command
-    private static final String COMMAND = "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
+    private static final String COMMAND =
+            "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
 
     Commandeer cmd;
 
@@ -57,7 +58,6 @@ public class Example {
 
     public void process(String input) {
         CommandParser parser = cmd.parse(input);
-        //parser = new CommandParser(cmd, null, input, "!");
 
         System.out.println("input: " + input);
 
