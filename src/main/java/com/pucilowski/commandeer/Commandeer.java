@@ -31,8 +31,14 @@ public class Commandeer {
         this(argTypes, null);
     }
 
-    public Commandeer(Map<String, TypeParser> argTypes, String prefix) {
-        this.argTypes = argTypes;
+    public Commandeer(Map<String, TypeParser> newArgTypes, String prefix) {
+        if (newArgTypes == null) {
+            this.argTypes = new HashMap<>();
+            this.argTypes.put("text", DefaultTypes.STRING);
+            this.argTypes.put("int", DefaultTypes.INTEGER);
+            this.argTypes.put("real", DefaultTypes.DOUBLE);
+        } else
+            this.argTypes = newArgTypes;
 
         this.prefix = prefix;
     }
@@ -79,11 +85,11 @@ public class Commandeer {
         return def;
     }
 
-    public CommandParser parse(String input, String prefix) {
+    public ParsedCommand parse(String input, String prefix) {
         for (CommandDef def : commands) {
-            CommandParser parser = new CommandParser(this, def, input, prefix);
-            if (parser.matchCommand()) {
-                parser.parseCommand();
+            ParsedCommand parser = new ParsedCommand(this, def, input, prefix);
+            parser.parseCommand();
+            if (parser.isAliasMatch()) {
                 return parser;
             }
         }
@@ -91,7 +97,7 @@ public class Commandeer {
         return null;
     }
 
-    public CommandParser parse(String input) {
+    public ParsedCommand parse(String input) {
         return parse(input, prefix);
     }
 
@@ -110,7 +116,6 @@ public class Commandeer {
         return names;
     }
 
-
     //(\w+)(:?(\w+)?)
     //(<|\[?)(\w+)(:?(\w+)?)(>|\]?)
     private static final Pattern ARG_PATTERN = Pattern.compile("(\\w+)(:?(\\w+)?)");
@@ -118,9 +123,9 @@ public class Commandeer {
     private static ArgumentDef parseArg(final String argDef) {
         char open = argDef.charAt(0);
         char close = argDef.charAt(argDef.length() - 1);
-        boolean crocs = open == '<' && close == '>';
+        boolean angle = open == '<' && close == '>';
         boolean square = open == '[' && close == ']';
-        if (!crocs && !square) {
+        if (!angle && !square) {
             throw new MalformedCommandFormatException("Invalid argument definition: \"" + argDef + "\", argument has to be enclosed in <> or []");
         }
 
@@ -135,7 +140,7 @@ public class Commandeer {
         String type = m.group(3);
         if (type == null) type = "string";
 
-        return new ArgumentDef(name, type, crocs);
+        return new ArgumentDef(name, type, angle);
     }
 
 

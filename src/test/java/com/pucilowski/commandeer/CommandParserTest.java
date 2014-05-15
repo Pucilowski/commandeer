@@ -9,20 +9,15 @@ public class CommandParserTest {
     public static final String FORMAT = "command|cmd <arg1:text> <arg2:int> [arg3:real]";
 
     @Test
-    public void commandMatchPrefixedTest() {
-
-    }
-
-    @Test
     public void requiredArgumentsTest() {
         Commandeer cmd = new Commandeer();
-        CommandDef def = cmd.addCommand(FORMAT);
+        cmd.addCommand(FORMAT);
 
         final String[] inputs = {
-                "!cmd string 123",
-                "!cmd string",
+                "!cmd red 123",
+                "!cmd red",
                 "!cmd 123",
-                "!cmd string 123 4.5",
+                "!cmd red 123 4.5",
         };
         final boolean[] valid = {true,false,false,true};
 
@@ -30,7 +25,7 @@ public class CommandParserTest {
             String input = inputs[i];
             boolean v = valid[i];
 
-            CommandParser parser = cmd.parse(input, "!");
+            ParsedCommand parser = cmd.parse(input, "!");
             parser.parseCommand();
 
             System.out.println("input: " + input);
@@ -44,7 +39,6 @@ public class CommandParserTest {
 
     }
 
-    @Test
     public void exampleCommands() {
         final String[] inputs = {
                 "!command some string",
@@ -61,24 +55,19 @@ public class CommandParserTest {
         System.out.println("format: " + def.getFormat() + "\n");
 
         for (String input : inputs) {
-            CommandParser parser = cmd.parse(input, "!");
-            parser.parseCommand();
+            ParsedCommand command = cmd.parse(input, "!");
+            command.parseCommand();
 
             System.out.println("input: " + input);
 
-            if (parser.getError() == null) {
-                Command c = parser.getCommand();
-
-                System.out.println("\tresult: " + c.toString());
+            if (command.getError() == null) {
+                System.out.println("\tresult: " + command.toString());
             } else {
-                System.out.println("\terror: " + parser.getError());
+                System.out.println("\terror: " + command.getError());
             }
         }
     }
 
-
-
-    @Test
     public void testCommandParsing() {
         //TODO some actual testing
         String[] inputs = {
@@ -97,14 +86,13 @@ public class CommandParserTest {
 
         System.out.println("format: " + def.getFormat() + "\n");
         for (String input : inputs) {
-            CommandParser parser = cmd.parse(input, "!");
+            ParsedCommand parser = cmd.parse(input, "!");
             parser.parseCommand();
 
             System.out.println("input: " + input);
 
             if (parser.getError() == null) {
-                Command c = parser.getCommand();
-                System.out.println("parsed:\n" + c.toString());
+                System.out.println("parsed:\n" + parser.toString());
             } else {
                 System.out.println("error: " + parser.getError());
             }

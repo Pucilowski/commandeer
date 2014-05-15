@@ -1,11 +1,11 @@
 package com.pucilowski.commandeer;
 
 import com.pucilowski.commandeer.command.CommandDef;
-import com.pucilowski.commandeer.command.DefaultTypes;
 import com.pucilowski.commandeer.command.ArgumentDef;
 import com.pucilowski.commandeer.command.TypeParser;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,21 +13,23 @@ import java.util.regex.Pattern;
 /**
  * Created by martin on 15/05/14.
  */
-public class CommandParser {
+public class ParsedCommand {
 
     private final Commandeer cmd;
     private final CommandDef def;
     private final String input;
     private final String prefix;
 
-    private String name;
+    private String alias;
     private String argsString;
-    private final TreeMap<String, Object> argMap = new TreeMap<>();
+
 
     private String error;
-    private Command command;
+    //private Command command;
 
-    protected CommandParser(Commandeer cmd, CommandDef def, String input, String prefix) {
+    private final TreeMap<String, Object> args = new TreeMap<>();
+
+    protected ParsedCommand(Commandeer cmd, CommandDef def, String input, String prefix) {
         this.cmd = cmd;
         this.def = def;
         this.input = input;
@@ -38,7 +40,13 @@ public class CommandParser {
         return def;
     }
 
-    public boolean matchCommand() {
+    private boolean aliasMatch = false;
+
+    public boolean isAliasMatch() {
+        return aliasMatch;
+    }
+
+    private boolean matchAlias() {
         if (prefix != null && !input.startsWith(prefix)) {
             return false;
         }
@@ -47,45 +55,42 @@ public class CommandParser {
         String line = input.substring(start);
 
         String[] parts = line.split(" ");
-        name = parts[0];
+        alias = parts[0];
 
         try {
-            argsString = line.substring(name.length() + 1);
+            argsString = line.substring(alias.length() + 1);
         } catch (RuntimeException e) {
             argsString = null;
         }
 
-        return matchCommandAlias(name);
-
+        return (aliasMatch = matchCommandAlias(alias));
     }
 
+
     public boolean parseCommand() {
-        if (name == null) {
-            if (!matchCommand()) {
-                error = "Input command '" + input + "' does not match command " + def.getFormat() + " prefixed with: " + prefix;
-                return false;
-            }
+        if (!matchAlias()) {
+            error = "Input command '" + input + "' does not match command " + def.getFormat() + " prefixed with: " + prefix;
+            return false;
         }
 
-        if (argsString != null) {
-            parseArguments();
-        }
+        parseArguments();
 
         if (error != null) return false;
 
-        command = new Command(name, argMap);
+        //command = new Command(alias, args);
         return true;
     }
 
     private void parseArguments() {
-        String[] args = tokenize(argsString);
+        String[] inputArgs = new String[0];
+        if (argsString != null) inputArgs = tokenize(argsString);
 
         for (int i = 0; i < def.getArguments().length; i++) {
             ArgumentDef argDef = def.getArguments()[i];
 
             String arg;
             try {
-                arg = args[i];
+                arg = inputArgs[i];
             } catch (ArrayIndexOutOfBoundsException e) {
                 if (argDef.isRequired()) {
                     error = "Argument " + argDef.toString() + " is not optional.";
@@ -95,7 +100,7 @@ public class CommandParser {
 
             try {
                 Object o = parseArgument(argDef, arg);
-                argMap.put(argDef.getName(), o);
+                args.put(argDef.getName(), o);
             } catch (RuntimeException e) {
                 error = "'" + arg + "' is not a valid argument value for " + argDef.getName() + ":" + argDef.getType() + " (" + e.toString() + ")";
                 return;
@@ -104,6 +109,8 @@ public class CommandParser {
     }
 
     private Object parseArgument(ArgumentDef argDef, String arg) {
+        //if(cmd.argTypes==null) throw new NullPointerException();
+
         TypeParser type = cmd.argTypes.get(argDef.getType());
 
         return type.parse(arg);
@@ -136,14 +143,60 @@ public class CommandParser {
         return parts.toArray(new String[parts.size()]);
     }
 
+    //command
+    public String getAlias() {
+        return alias;
+    }
+
+    public int countArgs() {
+        return args.size();
+    }
+
+    public TreeMap<String, Object> getArgs() {
+        return args;
+    }
+
+    public boolean hasArg(String name) {
+        return args.containsKey(name);
+    }
+
+    public Object getArg(String name) {
+        return args.get(name);
+    }
+
+    public String getArgAsString(String name) {
+        return (String) args.get(name);
+    }
+
+    public Integer getArgAsInteger(String name) {
+        return (Integer) args.get(name);
+    }
+
+    public double getArgAsDouble(String name) {
+        return (Double) args.get(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Command{" +
+                "alias='" + alias + '\'' +
+                ", args=" + descriptiveArgMap() +
+                '}';
+    }
+
+    private TreeMap<String, Object> descriptiveArgMap() {
+        TreeMap<String, Object> types = new TreeMap<>();
+
+        for (Map.Entry<String, Object> entry : args.entrySet()) {
+            String type = entry.getValue().getClass().getSimpleName();
+            types.put(entry.getKey() + " (" + type + ")", entry.getValue());
+        }
+
+        return types;
+    }
 
     public String getError() {
         return error;
     }
 
-    public Command getCommand() {
-        if (command == null) parseCommand();
-
-        return command;
-    }
 }
