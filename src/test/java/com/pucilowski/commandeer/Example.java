@@ -13,15 +13,16 @@ public class Example {
 
     //create a command definition using a builder
     CommandBuilder builder = new CommandBuilder();
-    CommandDef cmdDef = builder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
+    CommandDef cmdDef = builder
+            .defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
 
     public void process(String input) {
-        CommandParser parser = new CommandParser(cmdDef, input, "!");
+        CommandParser parser = new CommandParser(cmdDef, input);
         parser.parseCommand();
 
         String error;
-        if((error = parser.getError())!=null) {
-            //tells us why the command was not called properly
+        if ((error = parser.getError()) != null) {
+            //tells us why the input was not valid
             System.out.println("Error: " + error);
         } else {
             //get instance of the parsed user input
@@ -30,7 +31,12 @@ public class Example {
             // the specific alias that was used
             String alias = command.getAlias();
             //a map of the argument values, addressed by argument name
-            Map<String,Object> args = command.getArgs();
+            Map<String, Object> args = command.getArgs();
+
+            //argument values by name
+            String arg1 = command.getArg("arg1");
+            int arg2 = command.getArgAsInteger("arg2");
+            double arg3 = command.getArgAsDouble("arg3");
         }
     }
 }

@@ -36,6 +36,10 @@ public class Command {
         return (Integer) args.get(name);
     }
 
+    public double getArgAsDouble(String name) {
+        return (Double) args.get(name);
+    }
+
     @Override
     public String toString() {
         return "Command{" +
