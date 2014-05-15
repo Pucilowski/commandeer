@@ -46,21 +46,18 @@ go through the various ways in which we can query it.
 
 ```Java
 public void process(String input) {
-    CommandParser parser = cmd.parse(input);
+    CommandParser command = cmd.parse(input);
 
-    if(parser == null) {
+    if(command == null) {
         System.out.println("\tnot a command");
         return;
     }
 
     String error;
-    if ((error = parser.getError()) != null) {
+    if ((error = command.getError()) != null) {
         //tells us why the input was not valid
         System.out.println("\terror: " + error);
     } else {
-        //get instance of the parsed user input
-        Command command = parser.getCommand();
-
         //check out what's what
         System.out.println("\tresult: " + command.toString());
 
