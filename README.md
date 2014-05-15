@@ -1,7 +1,7 @@
 commandeer
 ==========
 
-Easily define and parse text commands of format commonly used by IRC bots.
+Easily and safely define and query text commands of a format commonly used by IRC bots.
 
 Getting started
 ---------------
@@ -47,8 +47,6 @@ go through the various ways in which we can query it.
 ```Java
 public void process(String input) {
     CommandParser parser = cmd.parse(input);
-
-    System.out.println("input: " + input);
 
     if(parser == null) {
         System.out.println("\tnot a command");
@@ -120,4 +118,3 @@ TODO
 ----
 
 *   Callback methods
-*   

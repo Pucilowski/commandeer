@@ -42,24 +42,24 @@ public class Example {
                 "command",
                 "!command red green",
                 "!command \"red green\"",
-                "!cmd string word",
-                "!cmd string 3.141",
-                "!cmd string 42",
-                "!cmd string 42 3.141",
-                "!cmd string 42 3.141 water",
-                "!cmd string 42 3.141 22:52:11"
+                "!command \"red green\" blue",
+                "!cmd red green",
+                "!cmd red 3.141",
+                "!cmd red 42",
+                "!cmd red 42 3.141",
+                "!cmd red 42 3.141 water",
+                "!cmd red 42 3.141 22:52:11"
         };
 
         System.out.println("format: " + COMMAND);
         for (String input : inputs) {
+            System.out.println("input: " + input);
             process(input);
         }
     }
 
     public void process(String input) {
         CommandParser parser = cmd.parse(input);
-
-        System.out.println("input: " + input);
 
         if(parser == null) {
             System.out.println("\tnot a command");
