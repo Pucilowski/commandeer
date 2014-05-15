@@ -2,12 +2,45 @@ package com.pucilowski.commandeer;
 
 import com.pucilowski.commandeer.command.CommandDef;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class CommandParserTest {
 
+    public static final String FORMAT = "command|cmd <arg1:text> <arg2:int> [arg3:real]";
 
     @Test
     public void commandMatchPrefixedTest() {
+
+    }
+
+    @Test
+    public void requiredArgumentsTest() {
+        Commandeer cmd = new Commandeer();
+        CommandDef def = cmd.addCommand(FORMAT);
+
+        final String[] inputs = {
+                "!cmd string 123",
+                "!cmd string",
+                "!cmd 123",
+                "!cmd string 123 4.5",
+        };
+        final boolean[] valid = {true,false,false,true};
+
+        for (int i = 0; i < inputs.length; i++) {
+            String input = inputs[i];
+            boolean v = valid[i];
+
+            CommandParser parser = cmd.parse(input, "!");
+            parser.parseCommand();
+
+            System.out.println("input: " + input);
+            System.out.println("error: " + parser.getError());
+
+            if ((parser.getError() != null) == v) {
+                System.out.println(parser.getCommandDef().getFormat() +" : " + parser.getError());
+                fail();
+            }
+        }
 
     }
 
@@ -22,13 +55,13 @@ public class CommandParserTest {
                 "!cmd string 10 4.4"
         };
 
-        CommandBuilder builder = new CommandBuilder();
-        CommandDef cmd = builder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
+        Commandeer cmd = new Commandeer();
+        CommandDef def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
 
-        System.out.println("format: " + cmd.getFormat() + "\n");
+        System.out.println("format: " + def.getFormat() + "\n");
 
         for (String input : inputs) {
-            CommandParser parser = new CommandParser(cmd, input, "!");
+            CommandParser parser = cmd.parse(input, "!");
             parser.parseCommand();
 
             System.out.println("input: " + input);
@@ -43,13 +76,11 @@ public class CommandParserTest {
         }
     }
 
+
+
     @Test
     public void testCommandParsing() {
         //TODO some actual testing
-
-        CommandBuilder builder = new CommandBuilder();
-        CommandDef cmd = builder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
-
         String[] inputs = {
                 "!command some string",
                 "!cmd \"some string\"",
@@ -61,9 +92,12 @@ public class CommandParserTest {
                 "!cmd string 11 \"-3d\"",
         };
 
-        System.out.println("format: " + cmd.getFormat() + "\n");
+        Commandeer cmd = new Commandeer();
+        CommandDef def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
+
+        System.out.println("format: " + def.getFormat() + "\n");
         for (String input : inputs) {
-            CommandParser parser = new CommandParser(cmd, input, "!");
+            CommandParser parser = cmd.parse(input, "!");
             parser.parseCommand();
 
             System.out.println("input: " + input);

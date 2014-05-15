@@ -28,11 +28,19 @@ public class Command {
         return args;
     }
 
-    public String getArg(String name) {
+    public boolean hasArg(String name) {
+        return args.containsKey(name);
+    }
+
+    public Object getArg(String name) {
+        return args.get(name);
+    }
+
+    public String getArgAsString(String name) {
         return (String) args.get(name);
     }
 
-    public int getArgAsInteger(String name) {
+    public Integer getArgAsInteger(String name) {
         return (Integer) args.get(name);
     }
 
@@ -52,7 +60,8 @@ public class Command {
         TreeMap<String, Object> types = new TreeMap<>();
 
         for (Map.Entry<String, Object> entry : args.entrySet()) {
-            types.put(entry.getValue().getClass().getSimpleName() + " " + entry.getKey(), entry.getValue());
+            String type = entry.getValue().getClass().getSimpleName();
+            types.put(entry.getKey() + " (" + type + ")", entry.getValue());
         }
 
         return types;

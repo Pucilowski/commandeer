@@ -5,7 +5,7 @@ import java.util.HashMap;
 /**
  * Created by martin on 15/05/14.
  */
-public class TypeDefs {
+public class DefaultTypes {
 
     public static final TypeParser<String> STRING =  input -> input;
     public static final TypeParser<Integer> INTEGER =  Integer::parseInt;
@@ -37,10 +37,4 @@ public class TypeDefs {
         });*/
     }
 
-    /**
-     * Created by martin on 15/05/14.
-     */
-    public static interface TypeParser<E> {
-        public E parse(String input);
-    }
 }

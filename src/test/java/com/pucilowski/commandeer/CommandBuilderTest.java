@@ -3,12 +3,12 @@ package com.pucilowski.commandeer;
 import com.pucilowski.commandeer.command.ArgumentDef;
 import com.pucilowski.commandeer.command.CommandDef;
 import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
-import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class CommandBuilderTest {
 
-    CommandBuilder builder = new CommandBuilder();
+    Commandeer builder = new Commandeer();
 
     public static final String CMD_NAME = "command";
 
@@ -81,14 +81,14 @@ public class CommandBuilderTest {
     }
 
     public void testCommandFormat(String format, boolean valid) {
-        CommandBuilder builder = new CommandBuilder();
+        Commandeer builder = new Commandeer();
 
         try {
-            builder.defineCommand(format);
-            if (!valid) Assert.fail("command format '" + format + " should be invalid");
+            builder.addCommand(format);
+            if (!valid) fail("command format '" + format + " should be invalid");
         } catch (MalformedCommandFormatException e) {
             //System.out.println("Exc: " + e.getMessage());
-            if (valid) Assert.fail("command format '" + format + " should be valid");
+            if (valid) fail("command format '" + format + " should be valid");
         }
     }
 
@@ -97,8 +97,8 @@ public class CommandBuilderTest {
         MockCmdDef[] tests = commandParseTests();
 
         for (MockCmdDef test : tests) {
-            Assert.assertEquals(test.expectedFormat, test.command.getFormat());
-            Assert.assertArrayEquals(test.expectedArgs, test.command.getArguments());
+            assertEquals(test.expectedFormat, test.command.getFormat());
+            assertArrayEquals(test.expectedArgs, test.command.getArguments());
 
 /*            for (int i = 0; i < test.expectedArgs.length; i++) {
                 ArgumentDef ex = test.expectedArgs[i];
@@ -134,7 +134,7 @@ public class CommandBuilderTest {
 
             expectedFormat = sb.toString().trim();
 
-            this.command = builder.defineCommand(expectedFormat);
+            this.command = builder.addCommand(expectedFormat);
         }
     }
 

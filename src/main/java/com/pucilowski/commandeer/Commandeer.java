@@ -2,9 +2,12 @@ package com.pucilowski.commandeer;
 
 import com.pucilowski.commandeer.command.ArgumentDef;
 import com.pucilowski.commandeer.command.CommandDef;
-import com.pucilowski.commandeer.command.TypeDefs;
+import com.pucilowski.commandeer.command.DefaultTypes;
+import com.pucilowski.commandeer.command.TypeParser;
 import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -13,11 +16,28 @@ import java.util.regex.Pattern;
 /**
  * Created by martin on 15/05/14.
  */
-public class CommandBuilder {
+public class Commandeer {
 
-    private final Map<String, TypeDefs.TypeParser> typeParsers = TypeDefs.DEFAULT_TYPES;
+    public final Map<String, TypeParser> argTypes;
+    private final String prefix;
 
-    public CommandDef defineCommand(String format) {
+    ArrayList<CommandDef> commands = new ArrayList<>();
+
+    public Commandeer() {
+        this(null, null);
+    }
+
+    public Commandeer(Map<String, TypeParser> argTypes) {
+        this(argTypes, null);
+    }
+
+    public Commandeer(Map<String, TypeParser> argTypes, String prefix) {
+        this.argTypes = argTypes;
+
+        this.prefix = prefix;
+    }
+
+    public CommandDef addCommand(String format) {
         String[] names = null;
 
         String[] parts = format.split(" ");
@@ -34,6 +54,7 @@ public class CommandBuilder {
                 names = parseNames(format, parts[0]);
                 continue;
             }
+
             ArgumentDef argDef = parseArg(parts[i]);
 
             if (argDef.isRequired()) {
@@ -53,9 +74,26 @@ public class CommandBuilder {
 
         if (names == null) throw new MalformedCommandFormatException("Failed to parse command aliases");
 
-        return new CommandDef(format, names, arguments);
+        CommandDef def = new CommandDef(format, names, arguments);
+        commands.add(def);
+        return def;
     }
 
+    public CommandParser parse(String input, String prefix) {
+        for (CommandDef def : commands) {
+            CommandParser parser = new CommandParser(this, def, input, prefix);
+            if (parser.matchCommand()) {
+                parser.parseCommand();
+                return parser;
+            }
+        }
+
+        return null;
+    }
+
+    public CommandParser parse(String input) {
+        return parse(input, prefix);
+    }
 
     private static String[] parseNames(String format, String cmdDef) {
         String[] cmdsDef = cmdDef.split("\\|");
@@ -99,5 +137,6 @@ public class CommandBuilder {
 
         return new ArgumentDef(name, type, crocs);
     }
+
 
 }
