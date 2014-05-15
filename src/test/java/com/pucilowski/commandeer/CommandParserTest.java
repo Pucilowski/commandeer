@@ -7,10 +7,48 @@ public class CommandParserTest {
 
 
     @Test
+    public void commandMatchPrefixedTest() {
+
+    }
+
+    @Test
+    public void exampleCommands() {
+        final String[] inputs = {
+                "!command some string",
+                "!command \"some string\"",
+                "!cmd string word",
+                "!cmd string 10",
+                "!cmd string 5.4 10",
+                "!cmd string 10 4.4"
+        };
+
+        CommandBuilder builder = new CommandBuilder();
+        CommandDef cmd = builder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
+
+        System.out.println("format: " + cmd.getFormat() + "\n");
+
+        for (String input : inputs) {
+            CommandParser parser = new CommandParser(cmd, input, "!");
+            parser.parseCommand();
+
+            System.out.println("input: " + input);
+
+            if (parser.getError() == null) {
+                Command c = parser.getCommand();
+
+                System.out.println("\tresult: " + c.toString());
+            } else {
+                System.out.println("\terror: " + parser.getError());
+            }
+        }
+    }
+
+    @Test
     public void testCommandParsing() {
         //TODO some actual testing
 
-        CommandDef cmd = CommandBuilder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
+        CommandBuilder builder = new CommandBuilder();
+        CommandDef cmd = builder.defineCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
 
         String[] inputs = {
                 "!command some string",

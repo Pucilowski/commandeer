@@ -1,6 +1,7 @@
 package com.pucilowski.commandeer;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by martin on 15/05/14.
@@ -8,9 +9,9 @@ import java.util.HashMap;
 public class Command {
 
     private final String alias;
-    private final HashMap<String, Object> args;
+    private final TreeMap<String, Object> args;
 
-    public Command(String alias, HashMap<String, Object> args) {
+    public Command(String alias, TreeMap<String, Object> args) {
         this.alias = alias;
         this.args = args;
     }
@@ -23,7 +24,7 @@ public class Command {
         return args.size();
     }
 
-    public HashMap<String, Object> getArgs() {
+    public TreeMap<String, Object> getArgs() {
         return args;
     }
 
@@ -31,7 +32,7 @@ public class Command {
         return (String) args.get(name);
     }
 
-    public int getArgInteger(String name) {
+    public int getArgAsInteger(String name) {
         return (Integer) args.get(name);
     }
 
@@ -39,7 +40,17 @@ public class Command {
     public String toString() {
         return "Command{" +
                 "alias='" + alias + '\'' +
-                ", args=" + args +
+                ", args=" + descriptiveArgMap() +
                 '}';
+    }
+
+    private TreeMap<String, Object> descriptiveArgMap() {
+        TreeMap<String, Object> types = new TreeMap<>();
+
+        for (Map.Entry<String, Object> entry : args.entrySet()) {
+            types.put(entry.getValue().getClass().getSimpleName() + " " + entry.getKey(), entry.getValue());
+        }
+
+        return types;
     }
 }

@@ -1,9 +1,11 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
 import com.pucilowski.commandeer.command.ArgumentDef;
 import com.pucilowski.commandeer.command.CommandDef;
+import com.pucilowski.commandeer.command.TypeDefs;
+import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
 
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,7 +15,9 @@ import java.util.regex.Pattern;
  */
 public class CommandBuilder {
 
-    public static CommandDef defineCommand(String format) {
+    private final Map<String, TypeDefs.TypeParser> typeParsers = TypeDefs.DEFAULT_TYPES;
+
+    public CommandDef defineCommand(String format) {
         String[] names = null;
 
         String[] parts = format.split(" ");
@@ -39,8 +43,8 @@ public class CommandBuilder {
                 pastRequired = true;
             }
 
-            if(argNames.contains(argDef.getName())) {
-                throw new MalformedCommandFormatException("Repeated argument name '"+argDef.getName()+"'. Argument names must be unique.");
+            if (argNames.contains(argDef.getName())) {
+                throw new MalformedCommandFormatException("Repeated argument name '" + argDef.getName() + "'. Argument names must be unique.");
             }
 
             arguments[i - 1] = argDef;

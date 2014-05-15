@@ -8,6 +8,8 @@ import org.junit.Test;
 
 public class CommandBuilderTest {
 
+    CommandBuilder builder = new CommandBuilder();
+
     public static final String CMD_NAME = "command";
 
     // mock arguments
@@ -79,8 +81,10 @@ public class CommandBuilderTest {
     }
 
     public void testCommandFormat(String format, boolean valid) {
+        CommandBuilder builder = new CommandBuilder();
+
         try {
-            CommandBuilder.defineCommand(format);
+            builder.defineCommand(format);
             if (!valid) Assert.fail("command format '" + format + " should be invalid");
         } catch (MalformedCommandFormatException e) {
             //System.out.println("Exc: " + e.getMessage());
@@ -130,7 +134,7 @@ public class CommandBuilderTest {
 
             expectedFormat = sb.toString().trim();
 
-            this.command = CommandBuilder.defineCommand(expectedFormat);
+            this.command = builder.defineCommand(expectedFormat);
         }
     }
 

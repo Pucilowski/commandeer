@@ -6,6 +6,8 @@ import com.pucilowski.commandeer.command.ArgumentDef;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +61,7 @@ public class CommandParser {
         }
 
         String[] args = tokenize(argsString);
-        HashMap<String, Object> argMap = new HashMap<>();
+        TreeMap<String, Object> argMap = new TreeMap<>();
 
         for (int i = 0; i < def.getArguments().length; i++) {
             ArgumentDef argDef = def.getArguments()[i];

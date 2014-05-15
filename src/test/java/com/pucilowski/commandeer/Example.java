@@ -1,12 +1,13 @@
-commandeer
-==========
+package com.pucilowski.commandeer;
 
-text command parsing made easy and safe
+import com.pucilowski.commandeer.command.CommandDef;
 
-Getting started
----------------
+import java.util.Map;
 
-```Java
+/**
+ * Created by martin on 15/05/14.
+ */
+public class Example {
     //define the format of the command
     public static final String CMD = "command|cmd <arg1:text> [arg2:int] [arg3:real]";
 
@@ -32,26 +33,4 @@ Getting started
             Map<String,Object> args = command.getArgs();
         }
     }
-```
-
-Examples
---------
-
-The sort of results you can expect from various inputs.
-
-```
-format: command|cmd <arg1:text> [arg2:int] [arg3:real]
-
-input: !command some string
-	error: Cannot accept 'string' as value for argument arg2:int
-input: !command "some string"
-	result: Command{alias='command', args={String arg1=some string}}
-input: !cmd string word
-	error: Cannot accept 'word' as value for argument arg2:int
-input: !cmd string 10
-	result: Command{alias='cmd', args={Integer arg2=10, String arg1=string}}
-input: !cmd string 5.4 10
-	error: Cannot accept '5.4' as value for argument arg2:int
-input: !cmd string 10 4.4
-	result: Command{alias='cmd', args={Double arg3=4.4, Integer arg2=10, String arg1=string}}
-```
+}
