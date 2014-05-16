@@ -11,7 +11,7 @@ The command format is given as `command|cmd <arg1:text> <arg2:int> [arg3:real] [
 The first part defines the command aliases, either a single alphanumeric word
 or multiple separated with pipe characters. What follows is the arguments, written
 as the argument name and type separated by a colon. Required arguments
-are enclosed in angle brackets while optional ones in square brackets.
+are enclosed in angle brackets while required ones in square brackets.
 
 In the above example we also add a type that is not handled by default, `time` along with
 a method to convert text input into a relevant Java object. If it cannot be done (or if a

@@ -1,17 +1,8 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.command.Argument;
-import com.pucilowski.commandeer.command.Command;
-import com.pucilowski.commandeer.command.DefaultTypes;
-import com.pucilowski.commandeer.command.TypeParser;
-import com.pucilowski.commandeer.exception.CommandInputException;
-import com.pucilowski.commandeer.parser.InputPreParser;
+import com.pucilowski.commandeer.structure.Command;
 
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by martin on 15/05/14.

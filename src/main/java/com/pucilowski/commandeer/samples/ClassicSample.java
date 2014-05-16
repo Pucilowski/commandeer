@@ -1,17 +1,17 @@
-package com.pucilowski.commandeer;
+package com.pucilowski.commandeer.samples;
 
+import com.pucilowski.commandeer.CommandInput;
+import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.exception.CommandInputException;
+import com.pucilowski.commandeer.exception.InvalidCommandException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 /**
  * Created by martin on 15/05/14.
  */
-public class Example {
-    //define the format of the command
+public class ClassicSample {
+    //define the format of the doCommand
     private static final String CMD =
             "cmd <arg1:text> [arg2:int]";
     private static final String CMD2 =
@@ -19,27 +19,27 @@ public class Example {
 
     Commandeer cmd;
 
-    public Example() {
+    public ClassicSample() {
         //construct a new commandeer instance
         cmd = new Commandeer.Builder()
                 .setDefaultPrefix("!") //default input prefix
-                .addArgType("time", input -> { // adding new type 'time'
+/*                .addArgType("time", input -> { // adding new type 'time'
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     try {
-                        return sdf.parse(input);
+                        return sdf.parseInput(input);
                     } catch (ParseException e) {
                         throw new RuntimeException(e.getMessage());
                     }
-                })
-                .setOnError((input, error) -> //will be called when given bad input
+                })*/
+                .setOnError((def, input, error) -> //will be called when given bad input
                         System.out.println("error (callback): " + error + ", input: " + input))
                 .create();
 
-        //register command with callback
-        cmd.registerCommand(CMD, (cmdIn) ->
+        //register doCommand with callback
+        cmd.parseCommand(CMD, (cmdIn) ->
                 System.out.println("cmdIn (callback): " + cmdIn));
         //or one without
-        cmd.registerCommand(CMD2);
+        cmd.parseCommand(CMD2);
     }
 
     public void demo() {
@@ -50,12 +50,12 @@ public class Example {
                 "!cmd red black",
                 "!cmd2 red 42 3.141 water"};
 
-        //simply call execute to parse and execute appropriate callback if possible
+        //simply call execute to parseInput and execute appropriate callback if possible
         //otherwise Commandeer.onError will be called with what went wrong
         cmd.execute(input[0]);
         cmd.execute(badInput[0]);
 
-        //or process command input and any errors yourself (throws CommandInputException)
+        //or process doCommand input and any errors yourself (throws CommandInputException)
         processInput(input[1]);
         processInput(badInput[1]);
     }
@@ -78,12 +78,14 @@ public class Example {
                 cmdIn.getArgAsInteger("arg2");
 
         } catch (CommandInputException e) {
+            System.out.println("error: " + e.getMessage() + ", input: " + input + ", command: " + e.getCommand());
+        } catch (InvalidCommandException e) {
             System.out.println("error: " + e.getMessage() + ", input: " + input);
         }
     }
 
     public static void main(String[] args) {
-        Example ex = new Example();
+        ClassicSample ex = new ClassicSample();
         ex.demo();
     }
 

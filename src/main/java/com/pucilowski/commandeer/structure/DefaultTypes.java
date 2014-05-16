@@ -1,4 +1,4 @@
-package com.pucilowski.commandeer.command;
+package com.pucilowski.commandeer.structure;
 
 import java.util.HashMap;
 
@@ -7,9 +7,29 @@ import java.util.HashMap;
  */
 public class DefaultTypes {
 
-    public static final TypeParser<String> STRING =  input -> input;
-    public static final TypeParser<Integer> INTEGER =  Integer::parseInt;
-    public static final TypeParser<Double> DOUBLE =  Double::parseDouble;
+    public static final TypeParser<String> STRING = new TypeParser<String>(String.class) {
+        @Override
+        public String parse(String input) {
+            return input;
+        }
+    };
+
+    public static final TypeParser<Integer> INTEGER =  new TypeParser<Integer>(Integer.class) {
+        @Override
+        public Integer parse(String input) {
+            return Integer.parseInt(input);
+        }
+    };
+    public static final TypeParser<Double> DOUBLE =  new TypeParser<Double>(Double.class) {
+        @Override
+        public Double parse(String input) {
+            return Double.parseDouble(input);
+        }
+    };
+
+    //public static final TypeParser<String> STRING =  input -> input;
+    //public static final TypeParser<Integer> INTEGER =  Integer::parseInt;
+    //public static final TypeParser<Double> DOUBLE =  Double::parseDouble;
 
     public static final HashMap<String, TypeParser> DEFAULT_TYPES = new HashMap<>();
 

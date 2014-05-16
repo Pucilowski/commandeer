@@ -1,8 +1,10 @@
 package com.pucilowski.commandeer.callbacks;
 
+import com.pucilowski.commandeer.structure.Command;
+
 /**
  * Created by martin on 15/05/14.
  */
 public interface CommandError {
-    public void onError(String input, String error);
+    public void onError(Command def, String input, String error);
 }
