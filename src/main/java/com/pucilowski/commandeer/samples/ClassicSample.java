@@ -4,7 +4,11 @@ import com.pucilowski.commandeer.CommandInput;
 import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.exception.CommandInputException;
 import com.pucilowski.commandeer.exception.InvalidCommandException;
+import com.pucilowski.commandeer.structure.TypeParser;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -15,7 +19,7 @@ public class ClassicSample {
     private static final String CMD =
             "cmd <arg1:text> [arg2:int]";
     private static final String CMD2 =
-            "command2|cmd2 <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
+            "command2|cmd2 <arg1:text> <arg2:int> [arg3:double] [arg4:time]";
 
     Commandeer cmd;
 
@@ -23,20 +27,23 @@ public class ClassicSample {
         //construct a new commandeer instance
         cmd = new Commandeer.Builder()
                 .setDefaultPrefix("!") //default input prefix
-/*                .addArgType("time", input -> { // adding new type 'time'
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                    try {
-                        return sdf.parseInput(input);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e.getMessage());
+                .addType("time", new TypeParser<Date>(Date.class) {
+                    @Override
+                    public Date parse(String input) {// adding new type 'time'
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                        try {
+                            return sdf.parse(input);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e.toString());
+                        }
                     }
-                })*/
+                })
                 .setOnError((def, input, error) -> //will be called when given bad input
                         System.out.println("error (callback): " + error + ", input: " + input))
                 .create();
 
         //register doCommand with callback
-        cmd.parseCommand(CMD, (cmdIn) ->
+        cmd.defineCommand(CMD, (cmdIn) ->
                 System.out.println("cmdIn (callback): " + cmdIn));
         //or one without
         cmd.parseCommand(CMD2);
@@ -62,7 +69,7 @@ public class ClassicSample {
 
     public void processInput(String input) {
         try {
-            CommandInput cmdIn = cmd.parse(input);
+            CommandInput cmdIn = cmd.parseInput(input);
 
             //check out what's what
             System.out.println("cmdIn: " + cmdIn.toString());

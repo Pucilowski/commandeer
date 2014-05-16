@@ -27,16 +27,16 @@ public class Commandeer {
     private final InputParser inputParser;
 
     private final String defaultPrefix;
-    private final Map<String, TypeParser> argTypes;
+    private final Map<String, TypeParser> types;
     private final CommandError onError;
 
-    List<Command> cmds = new ArrayList<>();
-    Map<String, Command> cmdsAliased = new TreeMap<>();
+    private final List<Command> cmds = new ArrayList<>();
+    private final Map<String, Command> cmdsAliased = new TreeMap<>();
 
     private Commandeer(
             CommandParser cmdParser, InputParser inputParser,
-            String defaultPrefix, Map<String, TypeParser> argTypes, CommandError onError) {
-        this.argTypes = argTypes;
+            String defaultPrefix, Map<String, TypeParser> types, CommandError onError) {
+        this.types = types;
         this.defaultPrefix = defaultPrefix;
         this.cmdParser = cmdParser;
         this.inputParser = inputParser;
@@ -54,7 +54,7 @@ public class Commandeer {
         }
     }
 
-    public Command extractCommand(Object object, Method method) {
+    private Command extractCommand(Object object, Method method) {
         Cmd l = method.getAnnotation(Cmd.class);
 
         String[] aliases = l.value();
@@ -88,8 +88,6 @@ public class Commandeer {
                     }
                 }
             }
-
-
             args[i] = new Parameter(name, type, def != null, def);
         }
 
@@ -97,7 +95,7 @@ public class Commandeer {
     }
 
     public static TypeParser getTypeParser(Commandeer cmd, Class p) {
-        for (Map.Entry<String, TypeParser> entry : cmd.getArgTypes().entrySet()) {
+        for (Map.Entry<String, TypeParser> entry : cmd.getTypes().entrySet()) {
             TypeParser tp = entry.getValue();
 
             try {
@@ -115,7 +113,7 @@ public class Commandeer {
     }
 
     public static String getArgumentType(Commandeer cmd, Class p) {
-        for (Map.Entry<String, TypeParser> entry : cmd.getArgTypes().entrySet()) {
+        for (Map.Entry<String, TypeParser> entry : cmd.getTypes().entrySet()) {
             TypeParser tp = entry.getValue();
 
             try {
@@ -133,7 +131,7 @@ public class Commandeer {
     }
 
     //text defined commands
-    public Command parseCommand(String format, CommandExecutor executor) {
+    public Command defineCommand(String format, CommandExecutor executor) {
         List<String> parts = new ArrayList<>(Arrays.asList(format.split(" ")));
         if (parts.size() == 0) {
             throw new CommandFormatException("Command format not specified");
@@ -176,7 +174,18 @@ public class Commandeer {
         return addCommand(aliases, parameters, executor);
     }
 
-    public Command addCommand(String[] aliases, Parameter[] parameters, CommandExecutor exec) {
+    public Command parseCommand(String format) {
+        return defineCommand(format, null);
+    }
+
+    /**
+     * checks rules for valid commands and adds them if successful
+     * @param aliases
+     * @param parameters
+     * @param exec
+     * @return
+     */
+    private Command addCommand(String[] aliases, Parameter[] parameters, CommandExecutor exec) {
         TreeSet<String> argNames = new TreeSet<>();
 
         // aliases
@@ -215,8 +224,8 @@ public class Commandeer {
         return def;
     }
 
-    public Command parseCommand(String format) {
-        return parseCommand(format, null);
+    public Command getCommand(String alias) {
+        return cmdsAliased.get(alias);
     }
 
     public CommandInput parseInput(String input, String prefix) throws CommandInputException, InvalidCommandException {
@@ -235,7 +244,7 @@ public class Commandeer {
         return new CommandInput(def, preParsed.getAlias(), argMap);
     }
 
-    public CommandInput parse(String input) throws CommandInputException, InvalidCommandException {
+    public CommandInput parseInput(String input) throws CommandInputException, InvalidCommandException {
         return parseInput(input, defaultPrefix);
     }
 
@@ -269,17 +278,15 @@ public class Commandeer {
         return inputParser;
     }
 
-    public Map<String, TypeParser> getArgTypes() {
-        return argTypes;
+    public Map<String, TypeParser> getTypes() {
+        return types;
     }
-
 
     /**
      * Created by martin on 15/05/14.
      */
     public static class Builder {
         private CommandParser commandParser = new DefaultCommandParser();
-
         private InputParser inputParser = new DefaultInputParser();
 
         private String defaultPrefix = null;
@@ -289,7 +296,7 @@ public class Commandeer {
         public Builder() {
             argTypes.put("text", DefaultTypes.STRING);
             argTypes.put("int", DefaultTypes.INTEGER);
-            argTypes.put("real", DefaultTypes.DOUBLE);
+            argTypes.put("double", DefaultTypes.DOUBLE);
         }
 
         public Builder setCommandParser(CommandParser commandParser) {
@@ -318,7 +325,7 @@ public class Commandeer {
             return this;
         }
 
-        public Builder addArgType(String name, TypeParser parser) {
+        public Builder addType(String name, TypeParser parser) {
             argTypes.put(name, parser);
             return this;
         }

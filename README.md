@@ -6,94 +6,93 @@ Easily and safely define and query text commands of a format commonly used by IR
 Getting started
 ---------------
 
-The command format is given as `command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]`.
+When working with commandeer you'll first need to define commands. There are two ways
+to do this - annotating methods and writing format strings.
 
-The first part defines the command aliases, either a single alphanumeric word
-or multiple separated with pipe characters. What follows is the arguments, written
-as the argument name and type separated by a colon. Required arguments
-are enclosed in angle brackets while required ones in square brackets.
+### Commands through annotated methods
 
-In the above example we also add a type that is not handled by default, `time` along with
-a method to convert text input into a relevant Java object. If it cannot be done (or if a
-checked exception is thrown), we'll throw a descriptive unchecked exception.
- 
-Finally we register our test command.
- 
-```Java
-//define the format of the command
-final String COMMAND =
-        "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
-
-//construct a new commandeer instance
-Commandeer cmd = new Commandeer.Builder()
-        .setDefaultPrefix("!") //default input prefix
-        .addArgType("time", input -> { // adding new type 'time'
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            try {
-                return sdf.parse(input);
-            } catch (ParseException e) {
-                throw new RuntimeException(e.toString());
-            }
-        })
-        .setOnError((input, error) -> //will be called when given bad input
-                System.out.println("\terror (callback): " + error + ", input: " + input))
-        .create();
-
-//register command with callback
-cmd.registerCommand(CMD, (cmdIn) ->
-    System.out.println("\tcmdIn (callback): " + cmdIn));
-//or one without
-cmd.registerCommand(CMD2);
-```
-
-At this point we can feed user input straight into Commandeer.
+The below command demonstrates the former. Simply annotate the method with @Cmd and
+pass a list of 'aliases' into it. An alias is just a word by which a command can be
+addressed.
 
 ```Java
-final String[] input = {
-        "!cmd red",
-        "!cmd2 red 42 3.141 22:52:11"};
-final String[] badInput = {
-        "!cmd red black",
-        "!cmd2 red 42 3.141 water"};
-
-//simply call execute to parse and execute appropriate callback if possible
-//otherwise Commandeer.onError will be called with what went wrong
-cmd.execute(input[0]);
-cmd.execute(badInput[0]);
-
-//or process command input and any errors yourself (throws CommandInputException)
-processInput(input[1]);
-processInput(badInput[1]);
-```
-
-```Java
-public void processInput(String input) {
-    try {
-        CommandInput cmdIn = cmd.parse(input);
-
-        //check out what's what
-        System.out.println("\tcmdIn: " + cmdIn.toString());
-
-        // the specific alias that was used
-        String alias = cmdIn.getAlias();
-        //a map of the argument names and typed values
-        Map<String, Object> args = cmdIn.getArgs();
-
-        //argument values by name
-        String arg1 = cmdIn.getArgAsString("arg1");
-        if (cmdIn.hasArg("arg2"))
-            cmdIn.getArgAsInteger("arg2");
-
-    } catch (CommandInputException e) {
-        System.out.println("\terror: " + e.getMessage() + ", input: " + input);
-    }
+@Cmd({"command", "cmd"})
+public void doCommand(String arg1, Integer arg2,
+                      @Param(name = "three", def = "4.11") Double arg3,
+                      @Param(name = "four", def = "12:11:30") Date arg4) {
+    System.out.println("\tcmd: " + arg1 + ", " + arg2 + ", " + arg3 + ", " + arg4);
 }
 ```
 
-The result of the above inputs would give
+Although optional, @Param can be used to give a parameter a name so that meaningful
+command usage information can be generated. It can also be used to mark parameters
+as optional by defining their default string value.
+
+### Commands through format string
+
+Alternatively you can define your command with a string that specifies its format.
+Below is a command written to suit the default CommandParser implementation
+although it can be swapped out with one written to handle a different format.
+
 ```
-cmdIn (callback): cmd, arg1: red (String)
-error (callback): 'black' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "black"), input: !cmd red black
-cmdIn: cmd2, arg1: red (String), arg2: 42 (Integer), arg3: 3.141 (Double), arg4: Thu Jan 01 22:52:11 GMT 1970 (Date)
-error: 'water' is not a valid argument value for arg4:time (java.lang.RuntimeException: Unparseable date: "water"), input: !cmd2 red 42 3.141 water
+command|cmd <arg1:text> <arg2:int> [arg3:double] [arg4:time]
 ```
+
+The first part defines the command aliases, either a single alphanumeric word
+or multiple separated by pipe characters. What follows is the parameters,
+expressed as their name and type separated by a colon. Required arguments
+are enclosed in angle brackets while required ones in square brackets.
+
+### Register and execute
+
+Now you can start running text commands. First construct a Commandeer instance
+as per your needs. Then you can pass an object to `extractCommands` to have it
+scanned for annotated methods.
+
+```Java
+cmd = new Commandeer.Builder()
+        .setDefaultPrefix("!") //default input prefix
+        .setOnError((def, input, error) -> //will be called when given bad input
+                System.out.println("error (callback): " + error + ", input: " + input))
+        .create();
+
+//add commands from annotations
+cmd.extractCommands(this);
+//add format string command and an associated callback
+cmd.defineCommand("command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]", (cmdIn)
+        -> System.out.println("cmdIn (callback): " + cmdIn));
+        
+//process input
+cmd.execute(input);
+```
+
+Finally you can pass text command input into cmd.execute. Given all the required arguments
+are present and have been successfully parsed into their relevant types the callback
+methods will be executed.
+
+### Parameter types
+
+You must define your own types and parsers to handle
+any types beyond the stock ones - text, int and double.
+
+Below is a Commandeer instance built to handle a new type - `time`.
+It specifies the Java object it maps to and gives instructions on
+how to convert string input to this class.
+```Java
+cmd = new Commandeer.Builder()
+        .addType("time", new TypeParser<Date>(Date.class) {
+            @Override
+            public Date parse(String input) {// adding new type 'time'
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                try {
+                    return sdf.parse(input);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e.toString());
+                }
+            }
+        })
+        .create();
+```
+
+Check out `AnnotatedSample` to see annotated methods, or `ClassicSample`
+to see the original format strings in action.

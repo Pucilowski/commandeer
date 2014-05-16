@@ -78,7 +78,7 @@ public class DefaultInputParser implements InputParser {
             return DefaultTypes.STRING.parse(arg);
         }
 
-        TypeParser type = cmd.getArgTypes().get(param.getType());
+        TypeParser type = cmd.getTypes().get(param.getType());
         return type.parse(arg);
     }
 
@@ -100,9 +100,6 @@ public class DefaultInputParser implements InputParser {
 
         return parts.toArray(new String[parts.size()]);
     }
-
-
-
 
     public static String minusPrefix(String input, String prefix) {
         if (prefix == null) return input;

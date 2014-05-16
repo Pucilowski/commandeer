@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 //TODO actual tests
 public class CommandInputTest {
 
-    public static final String FORMAT = "command|cmd <arg1> <arg2:int> [arg3:real]";
+    public static final String FORMAT = "command|cmd <arg1> <arg2:int> [arg3:double]";
 
     @Test
     public void badInputTest() {

@@ -3,6 +3,7 @@ package com.pucilowski.commandeer.samples;
 import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.annotations.Cmd;
 import com.pucilowski.commandeer.annotations.Param;
+import com.pucilowski.commandeer.structure.Command;
 import com.pucilowski.commandeer.structure.TypeParser;
 
 import java.text.ParseException;
@@ -22,7 +23,7 @@ public class AnnotatedSample {
                 .setDefaultPrefix("!")
                 .setOnError((def, input, error)
                         -> System.out.println("\terror: " + error + ", input: " + input))
-                .addArgType("time", new TypeParser<Date>(Date.class) {
+                .addType("time", new TypeParser<Date>(Date.class) {
                     @Override
                     public Date parse(String input) {// adding new type 'time'
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -35,9 +36,13 @@ public class AnnotatedSample {
                 })
                 .create();
 
+
+        //add commands from annotations
         cmd.extractCommands(this);
 
-        System.out.println("format: " + CMD);
+        Command def = cmd.getCommand("cmd");
+
+        System.out.println("format: " + cmd.getCmdParser().formatCommand(def));
         for (String input : inputs) {
             System.out.println("input: " + input);
             cmd.execute(input);
@@ -52,7 +57,7 @@ public class AnnotatedSample {
     }
 
     @Cmd({"command2", "cmd2"})
-    public void doCommand2(@Param(name="one") String str,
+    public void doCommand2(@Param(name = "one") String str,
                            @Param(name = "two", def = "123") Integer integer) {
         System.out.println("\tcmd2: " + str + ", " + integer);
     }
@@ -71,10 +76,4 @@ public class AnnotatedSample {
     public static void main(String[] args) {
         new AnnotatedSample();
     }
-
-    private static final String CMD =
-            "cmd <arg1:text> [arg2:int]";
-    private static final String CMD2 =
-            "command2|cmd2 <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
-
 }
