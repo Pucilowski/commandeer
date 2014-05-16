@@ -25,7 +25,7 @@ final String COMMAND =
         "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
 
 //construct a new commandeer instance
-Commandeer cmd = new Commandeer.Factory()
+Commandeer cmd = new Commandeer.Builder()
         .setDefaultPrefix("!") //default input prefix
         .addArgType("time", input -> { // adding new type 'time'
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
