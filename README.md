@@ -94,8 +94,7 @@ cmd = new Commandeer.Builder()
         .create();
 ```
 
-More
-###
+### More
 
 Check out [`AnnotatedSample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/samples/AnnotatedSample.java) 
 to see annotated methods, or [`ClassicSample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/samples/ClassicSample.java)
