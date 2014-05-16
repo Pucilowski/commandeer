@@ -5,7 +5,7 @@ package com.pucilowski.commandeer.parser;
  */
 public interface InputPreParser {
 
-    PreParsed preparse(String input, String prefix);
+    PreParsed preParse(String input, String prefix);
 
     public static class PreParsed {
         String alias;

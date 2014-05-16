@@ -18,19 +18,15 @@ public class CommandInputTest {
                 "",
                 "cmd",
                 "cm12d",
-                "cmd red",
-                "cmd 123",
-                "cmd red 123 4.5",
+                "cmd|",
+                "!cmd red",
+                "!cmd red 4.5",
         };
 
         String prefix = "!";
 
-        for (int i = 0; i < inputs.length; i++) {
-            String input = inputs[i];
-
-            System.out.println("input: " + input);
-
-            CommandInput cmdIn = testCommandParsing(cmd, input, prefix, false);
+        for (String input : inputs) {
+            testCommandParsing(cmd, input, prefix, false);
         }
     }
 

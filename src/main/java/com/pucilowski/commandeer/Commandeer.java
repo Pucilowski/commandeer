@@ -108,7 +108,7 @@ public class Commandeer {
 
 
     public CommandInput parse(String input, String prefix) throws CommandInputException {
-        InputPreParser.PreParsed preParsed = inputPreParser.preparse(input, prefix);
+        InputPreParser.PreParsed preParsed = inputPreParser.preParse(input, prefix);
         if (preParsed == null) {
             throw new CommandInputException("Could not pre-parse input '" + input + "'");
         }

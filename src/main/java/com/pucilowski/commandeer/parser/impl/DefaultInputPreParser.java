@@ -19,7 +19,7 @@ public class DefaultInputPreParser implements InputPreParser {
     }
 
     @Override
-    public PreParsed preparse(String input, String prefix) {
+    public PreParsed preParse(String input, String prefix) {
         String line = minusPrefix(input, prefix);
         if(line==null) return null;
 

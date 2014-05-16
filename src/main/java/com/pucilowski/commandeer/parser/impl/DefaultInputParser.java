@@ -53,8 +53,7 @@ public class DefaultInputParser implements InputParser {
         return argMap;
     }
 
-    @Override
-    public Object parseArgument(Commandeer cmd, Argument argDef, String arg) {
+    private Object parseArgument(Commandeer cmd, Argument argDef, String arg) {
         if (argDef.getType() == null) {
             return DefaultTypes.STRING.parse(arg);
         }
@@ -81,5 +80,4 @@ public class DefaultInputParser implements InputParser {
 
         return parts.toArray(new String[parts.size()]);
     }
-
 }
