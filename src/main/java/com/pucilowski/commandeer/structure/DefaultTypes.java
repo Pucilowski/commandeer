@@ -31,13 +31,7 @@ public class DefaultTypes {
     //public static final TypeParser<Integer> INTEGER =  Integer::parseInt;
     //public static final TypeParser<Double> DOUBLE =  Double::parseDouble;
 
-    public static final HashMap<String, TypeParser> DEFAULT_TYPES = new HashMap<>();
-
     static {
-        DEFAULT_TYPES.put("text", STRING);
-        DEFAULT_TYPES.put("int", INTEGER);
-        DEFAULT_TYPES.put("real", DOUBLE);
-
         /*DEFAULT_TYPES.put("duration", input -> {
             input  = input.replaceAll("\\s", "");
 
