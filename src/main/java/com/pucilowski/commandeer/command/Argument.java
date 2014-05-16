@@ -3,12 +3,12 @@ package com.pucilowski.commandeer.command;
 /**
  * Created by martin on 15/05/14.
  */
-public class ArgumentDef {
+public class Argument {
     private final String name;
     private final String type;
     private final boolean required;
 
-    public ArgumentDef(String name, String type, boolean required) {
+    public Argument(String name, String type, boolean required) {
         this.name = name;
         this.type = type;
         this.required = required;
@@ -19,7 +19,7 @@ public class ArgumentDef {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ArgumentDef argument = (ArgumentDef) o;
+        Argument argument = (Argument) o;
 
         if (required != argument.required) return false;
         if (!name.equals(argument.name)) return false;

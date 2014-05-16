@@ -1,14 +1,14 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.command.ArgumentDef;
-import com.pucilowski.commandeer.command.CommandDef;
+import com.pucilowski.commandeer.command.Argument;
+import com.pucilowski.commandeer.command.Command;
 import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CommandBuilderTest {
 
-    Commandeer builder = new Commandeer();
+    Commandeer builder = new Commandeer.Factory().create();
 
     public static final String CMD_NAME = "command";
 
@@ -81,7 +81,7 @@ public class CommandBuilderTest {
     }
 
     public void testCommandFormat(String format, boolean valid) {
-        Commandeer builder = new Commandeer();
+        Commandeer builder = new Commandeer.Factory().create();
 
         try {
             builder.addCommand(format);
@@ -114,11 +114,11 @@ public class CommandBuilderTest {
     public class MockCmdDef {
         private final String expectedFormat;
 
-        private final CommandDef command;
-        private final ArgumentDef[] expectedArgs;
+        private final Command command;
+        private final Argument[] expectedArgs;
 
         public MockCmdDef(String name, MockArgDef... mockArgs) {
-            expectedArgs = new ArgumentDef[mockArgs.length];
+            expectedArgs = new Argument[mockArgs.length];
 
             StringBuilder sb = new StringBuilder();
             sb.append(name).append(" ");
@@ -148,7 +148,7 @@ public class CommandBuilderTest {
         public final String type;
         public final boolean required;
 
-        public final ArgumentDef argDef;
+        public final Argument argDef;
 
         public MockArgDef(String format, String name, String type, boolean required) {
             this.format = format;
@@ -156,7 +156,7 @@ public class CommandBuilderTest {
             this.type = type;
             this.required = required;
 
-            argDef = new ArgumentDef(name, type, required);
+            argDef = new Argument(name, type, required);
         }
     }
 }

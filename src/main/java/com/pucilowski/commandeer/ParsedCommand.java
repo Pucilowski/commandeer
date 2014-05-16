@@ -1,7 +1,7 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.command.CommandDef;
-import com.pucilowski.commandeer.command.ArgumentDef;
+import com.pucilowski.commandeer.command.Argument;
+import com.pucilowski.commandeer.command.Command;
 import com.pucilowski.commandeer.command.TypeParser;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class ParsedCommand {
 
     private final Commandeer cmd;
-    private final CommandDef def;
+    private final Command def;
     private final String input;
     private final String prefix;
 
@@ -29,14 +29,14 @@ public class ParsedCommand {
 
     private final TreeMap<String, Object> args = new TreeMap<>();
 
-    protected ParsedCommand(Commandeer cmd, CommandDef def, String input, String prefix) {
+    protected ParsedCommand(Commandeer cmd, Command def, String input, String prefix) {
         this.cmd = cmd;
         this.def = def;
         this.input = input;
         this.prefix = prefix;
     }
 
-    public CommandDef getCommandDef() {
+    public Command getCommandDef() {
         return def;
     }
 
@@ -86,7 +86,7 @@ public class ParsedCommand {
         if (argsString != null) inputArgs = tokenize(argsString);
 
         for (int i = 0; i < def.getArguments().length; i++) {
-            ArgumentDef argDef = def.getArguments()[i];
+            Argument argDef = def.getArguments()[i];
 
             String arg;
             try {
@@ -108,7 +108,7 @@ public class ParsedCommand {
         }
     }
 
-    private Object parseArgument(ArgumentDef argDef, String arg) {
+    private Object parseArgument(Argument argDef, String arg) {
         //if(cmd.argTypes==null) throw new NullPointerException();
 
         TypeParser type = cmd.argTypes.get(argDef.getType());

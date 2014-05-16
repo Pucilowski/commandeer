@@ -1,6 +1,6 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.command.CommandDef;
+import com.pucilowski.commandeer.command.Command;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -10,7 +10,7 @@ public class CommandParserTest {
 
     @Test
     public void requiredArgumentsTest() {
-        Commandeer cmd = new Commandeer();
+        Commandeer cmd = new Commandeer.Factory().create();
         cmd.addCommand(FORMAT);
 
         final String[] inputs = {
@@ -49,8 +49,8 @@ public class CommandParserTest {
                 "!cmd string 10 4.4"
         };
 
-        Commandeer cmd = new Commandeer();
-        CommandDef def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
+        Commandeer cmd = new Commandeer.Factory().create();
+        Command def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:real]");
 
         System.out.println("format: " + def.getFormat() + "\n");
 
@@ -81,8 +81,8 @@ public class CommandParserTest {
                 "!cmd string 11 \"-3d\"",
         };
 
-        Commandeer cmd = new Commandeer();
-        CommandDef def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
+        Commandeer cmd = new Commandeer.Factory().create();
+        Command def = cmd.addCommand("command|cmd <arg1:text> [arg2:int] [arg3:duration]");
 
         System.out.println("format: " + def.getFormat() + "\n");
         for (String input : inputs) {

@@ -16,10 +16,10 @@ public class Example {
     Commandeer cmd;
 
     public Example() {
-        //use builder or simply new Commandeer() to use defaults
-        cmd = new CommandeerBuilder()
+        //construct a new commandeer instance
+        cmd = new Commandeer.Factory()
                 .setPrefix("!") //default input prefix
-                .addType("time", input -> { // adding new type 'time'
+                .addArgType("time", input -> { // adding new type 'time'
                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                     try {
                         return sdf.parse(input);

@@ -14,13 +14,13 @@ or typed:
 cmd|command <arg1:int> [arg2:string]
  */
 
-public class CommandDef {
+public class Command {
 
     private final String format;
     private final String[] aliases;
-    private final ArgumentDef[] arguments;
+    private final Argument[] arguments;
 
-    public CommandDef(String format, String[] aliases, ArgumentDef[] arguments) {
+    public Command(String format, String[] aliases, Argument[] arguments) {
         this.format = format;
         this.aliases = aliases;
         this.arguments = arguments;
@@ -35,7 +35,7 @@ public class CommandDef {
         return aliases;
     }
 
-    public ArgumentDef[] getArguments() {
+    public Argument[] getArguments() {
         return arguments;
     }
 
