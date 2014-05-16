@@ -35,11 +35,13 @@ Commandeer cmd = new Commandeer.Factory()
                 throw new RuntimeException(e.toString());
             }
         })
-        .setOnError((input, error) -> System.out.println("\terror (callback): " + error + " for input: " + input))
+        .setOnError((input, error) -> //will be called when given bad input
+                System.out.println("\terror (callback): " + error + " for input: " + input))
         .create();
 
 //register command with callback
-cmd.registerCommand(CMD, (cmdIn) -> System.out.println("\tcmdIn (callback): " + cmdIn));
+cmd.registerCommand(CMD, (cmdIn) ->
+    System.out.println("\tcmdIn (callback): " + cmdIn));
 //or one without
 cmd.registerCommand(CMD2);
 ```
