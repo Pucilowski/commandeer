@@ -1,14 +1,20 @@
 package com.pucilowski.commandeer.command;
 
+import com.pucilowski.commandeer.parser.ArgumentParser;
+
 /**
  * Created by martin on 15/05/14.
  */
 public class Argument {
+
+    private final ArgumentParser parser;
+
     private final String name;
     private final String type;
     private final boolean required;
 
-    public Argument(String name, String type, boolean required) {
+    public Argument(ArgumentParser parser, String name, String type, boolean required) {
+        this.parser=parser;
         this.name = name;
         this.type = type;
         this.required = required;
@@ -50,18 +56,6 @@ public class Argument {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        if (required) sb.append("<");
-        else sb.append("[");
-
-        sb.append(name);
-
-        sb.append(":").append(type);
-
-        if (required) sb.append(">");
-        else sb.append("]");
-
-        return sb.toString();
+        return parser.serialize(this);
     }
 }

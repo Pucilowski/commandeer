@@ -1,27 +1,30 @@
 package com.pucilowski.commandeer;
 
-import com.pucilowski.commandeer.command.Argument;
-import com.pucilowski.commandeer.command.Command;
-import com.pucilowski.commandeer.exception.MalformedCommandFormatException;
+import com.pucilowski.commandeer.exception.CommandFormatException;
+import com.pucilowski.commandeer.wrappers.MockArgDef;
+import com.pucilowski.commandeer.parser.ArgumentParser;
+import com.pucilowski.commandeer.parser.impl.DefaultArgumentParser;
+import com.pucilowski.commandeer.wrappers.MockCmdDef;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-public class CommandBuilderTest {
+public class CommandFormatTest {
 
-    Commandeer builder = new Commandeer.Factory().create();
+    static final ArgumentParser argumentParser = new DefaultArgumentParser();
 
     public static final String CMD_NAME = "command";
 
     // mock arguments
-    public static final MockArgDef ARG = new MockArgDef("<arg1>", "arg1", "text", true);
-    public static final MockArgDef ARG_TYPED = new MockArgDef("<arg1:int>", "arg1", "int", true);
-    public static final MockArgDef ARG_OPTIONAL = new MockArgDef("[arg1]", "arg1", "text", false);
-    public static final MockArgDef ARG_OPTIONAL_TYPED = new MockArgDef("[arg1:int]", "arg1", "int", false);
+    public static final MockArgDef ARG = new MockArgDef(argumentParser, "<arg1>", "arg1", null, true);
+    public static final MockArgDef ARG_TYPED = new MockArgDef(argumentParser, "<arg1:int>", "arg1", "int", true);
+    public static final MockArgDef ARG_OPTIONAL = new MockArgDef(argumentParser, "[arg1]", "arg1", null, false);
+    public static final MockArgDef ARG_OPTIONAL_TYPED = new MockArgDef(argumentParser, "[arg1:int]", "arg1", "int", false);
 
-    public static final MockArgDef ARG2 = new MockArgDef("<arg2>", "arg2", "text", true);
-    public static final MockArgDef ARG2_TYPED = new MockArgDef("<arg2:int>", "arg2", "int", true);
-    public static final MockArgDef ARG2_OPTIONAL = new MockArgDef("[arg2]", "arg2", "text", false);
-    public static final MockArgDef ARG2_OPTIONAL_TYPED = new MockArgDef("[arg2:int]", "arg2", "int", false);
+    public static final MockArgDef ARG2 = new MockArgDef(argumentParser, "<arg2>", "arg2", null, true);
+    public static final MockArgDef ARG2_TYPED = new MockArgDef(argumentParser, "<arg2:int>", "arg2", "int", true);
+    public static final MockArgDef ARG2_OPTIONAL = new MockArgDef(argumentParser, "[arg2]", "arg2", null, false);
+    public static final MockArgDef ARG2_OPTIONAL_TYPED = new MockArgDef(argumentParser, "[arg2:int]", "arg2", "int", false);
 
 
     private MockCmdDef[] commandParseTests() {
@@ -41,7 +44,7 @@ public class CommandBuilderTest {
     @Test
     public void validCommandAliasesTest() {
         String[] names = {"cmd", "command|cmd", "cmd/", "command/|cmd", "command|cmd/"};
-        boolean[] valid = {true, true, false, false, false };
+        boolean[] valid = {true, true, false, false, false};
 
         for (int i = 0; i < names.length; i++) {
             String cmd = names[i];
@@ -81,12 +84,12 @@ public class CommandBuilderTest {
     }
 
     public void testCommandFormat(String format, boolean valid) {
-        Commandeer builder = new Commandeer.Factory().create();
+        Commandeer cmd = new Commandeer.Builder().create();
 
         try {
-            builder.addCommand(format);
+            cmd.registerCommand(format);
             if (!valid) fail("command format '" + format + " should be invalid");
-        } catch (MalformedCommandFormatException e) {
+        } catch (CommandFormatException e) {
             //System.out.println("Exc: " + e.getMessage());
             if (valid) fail("command format '" + format + " should be valid");
         }
@@ -110,53 +113,4 @@ public class CommandBuilderTest {
     }
 
 
-
-    public class MockCmdDef {
-        private final String expectedFormat;
-
-        private final Command command;
-        private final Argument[] expectedArgs;
-
-        public MockCmdDef(String name, MockArgDef... mockArgs) {
-            expectedArgs = new Argument[mockArgs.length];
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(name).append(" ");
-
-            for (int i = 0; i < mockArgs.length; i++) {
-                MockArgDef mockArg = mockArgs[i];
-                sb.append(mockArg.argDef.toString());
-
-                sb.append(" ");
-
-                expectedArgs[i] = mockArg.argDef;
-            }
-
-            expectedFormat = sb.toString().trim();
-
-            this.command = builder.addCommand(expectedFormat);
-        }
-    }
-
-
-    /**
-     * Created by martin on 15/05/14.
-     */
-    public static class MockArgDef {
-        public final String format;
-        public final String name;
-        public final String type;
-        public final boolean required;
-
-        public final Argument argDef;
-
-        public MockArgDef(String format, String name, String type, boolean required) {
-            this.format = format;
-            this.name = name;
-            this.type = type;
-            this.required = required;
-
-            argDef = new Argument(name, type, required);
-        }
-    }
 }

@@ -1,5 +1,7 @@
 package com.pucilowski.commandeer.command;
 
+import com.pucilowski.commandeer.callbacks.CommandExecutor;
+
 import java.util.Arrays;
 
 /**
@@ -20,10 +22,18 @@ public class Command {
     private final String[] aliases;
     private final Argument[] arguments;
 
-    public Command(String format, String[] aliases, Argument[] arguments) {
+    private final CommandExecutor executor;
+
+    public Command(String format, String[] aliases, Argument[] arguments,
+                   CommandExecutor executor) {
         this.format = format;
         this.aliases = aliases;
         this.arguments = arguments;
+        this.executor = executor;
+    }
+
+    public Command(String format, String[] aliases, Argument[] arguments) {
+        this(format, aliases, arguments, null);
     }
 
 
@@ -39,6 +49,10 @@ public class Command {
         return arguments;
     }
 
+    public CommandExecutor getExecutor() {
+        return executor;
+    }
+
     @Override
     public String toString() {
         return "CommandDef{" +
@@ -46,5 +60,22 @@ public class Command {
                 ", aliases=" + Arrays.toString(aliases) +
                 ", arguments=" + Arrays.toString(arguments) +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Command command = (Command) o;
+
+        if (!format.equals(command.format)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return format.hashCode();
     }
 }

@@ -21,13 +21,13 @@ Finally we register our test command.
  
 ```Java
 //define the format of the command
-private static final String COMMAND = 
-    "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
+final String COMMAND =
+        "command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]";
 
-//use builder or simply new Commandeer() to use defaults
-Commandeer cmd = new CommandeerBuilder()
-        .setPrefix("!") //default input prefix
-        .addType("time", input -> { // adding new type 'time'
+//construct a new commandeer instance
+Commandeer cmd = new Commandeer.Factory()
+        .setDefaultPrefix("!") //default input prefix
+        .addArgType("time", input -> { // adding new type 'time'
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
             try {
                 return sdf.parse(input);
@@ -35,83 +35,63 @@ Commandeer cmd = new CommandeerBuilder()
                 throw new RuntimeException(e.toString());
             }
         })
+        .setOnError((input, error) -> System.out.println("\terror (callback): " + error + " for input: " + input))
         .create();
 
-//register commands
-cmd.addCommand(COMMAND);
+//register command with callback
+cmd.registerCommand(CMD, (cmdIn) -> System.out.println("\tcmdIn (callback): " + cmdIn));
+//or one without
+cmd.registerCommand(CMD2);
 ```
 
-In the below snippet we parse some user input and
-go through the various ways in which we can query it.
+At this point we can feed user input straight into Commandeer.
 
 ```Java
-public void process(String input) {
-    CommandParser command = cmd.parse(input);
+final String[] input = {
+        "!cmd red",
+        "!cmd2 red 42 3.141 22:52:11"};
+final String[] badInput = {
+        "!cmd red black",
+        "!cmd2 red 42 3.141 water"};
 
-    if(command == null) {
-        System.out.println("\tnot a command");
-        return;
-    }
+//simply call execute to parse and execute appropriate callback if possible
+//otherwise Commandeer.onError will be called with what went wrong
+cmd.execute(input[0]);
+cmd.execute(badInput[0]);
 
-    String error;
-    if ((error = command.getError()) != null) {
-        //tells us why the input was not valid
-        System.out.println("\terror: " + error);
-    } else {
+//or process command input and any errors yourself (throws CommandInputException)
+processInput(input[1]);
+processInput(badInput[1]);
+```
+
+```Java
+public void processInput(String input) {
+    try {
+        CommandInput cmdIn = cmd.parse(input);
+
         //check out what's what
-        System.out.println("\tresult: " + command.toString());
+        System.out.println("\tcmdIn: " + cmdIn.toString());
 
         // the specific alias that was used
-        String alias = command.getAlias();
+        String alias = cmdIn.getAlias();
         //a map of the argument names and typed values
-        Map<String, Object> args = command.getArgs();
+        Map<String, Object> args = cmdIn.getArgs();
 
         //argument values by name
-        String arg1 = command.getArgAsString("arg1");
+        String arg1 = cmdIn.getArgAsString("arg1");
+        if (cmdIn.hasArg("arg2"))
+            cmdIn.getArgAsInteger("arg2");
 
-        if (command.hasArg("arg2")) {
-            int arg2 = command.getArgAsInteger("arg2");
-        }
-
-        if (command.hasArg("arg3")) {
-            double arg3 = command.getArgAsDouble("arg3");
-        }
-
-        if (command.hasArg("arg4")) {
-            Date arg4 = (Date) command.getArg("arg4");
-        }
+    } catch (CommandInputException e) {
+        System.out.println("\terror: " + e.getMessage() + " for input: " + input);
     }
 }
 ```
 
-Examples
---------
-
-The sort of responses you can expect from valid and less valid inputs.
-
+The result of the above inputs would give
 ```
-format: command|cmd <arg1:text> <arg2:int> [arg3:real] [arg4:time]
-input: command
-	not a command
-input: !command red green
-	error: 'green' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "green")
-input: !command "red green"
-	error: Argument <arg2:int> is not optional.
-input: !cmd string word
-	error: 'word' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "word")
-input: !cmd string 3.141
-	error: '3.141' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "3.141")
-input: !cmd string 42
-	result: Command{alias='cmd', args={arg1 (String)=string, arg2 (Integer)=42}}
-input: !cmd string 42 3.141
-	result: Command{alias='cmd', args={arg1 (String)=string, arg2 (Integer)=42, arg3 (Double)=3.141}}
-input: !cmd string 42 3.141 water
-	error: 'water' is not a valid argument value for arg4:time (java.lang.RuntimeException: java.text.ParseException: Unparseable date: "water")
-input: !cmd string 42 3.141 22:52:11
-	result: Command{alias='cmd', args={arg1 (String)=string, arg2 (Integer)=42, arg3 (Double)=3.141, arg4 (Date)=Thu Jan 01 22:52:11 GMT 1970}}
+cmdIn (callback): Command{alias='cmd', args={arg1 (String)=red}}
+error (callback): 'black' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "black") for input: !cmd red black
+cmdIn: Command{alias='cmd2', args={arg1 (String)=red, arg2 (Integer)=42, arg3 (Double)=3.141, arg4 (Date)=Thu Jan 01 22:52:11 GMT 1970}}
+error: 'water' is not a valid argument value for arg4:time (java.lang.RuntimeException: Unparseable date: "water") for input: !cmd2 red 42 3.141 water
 ```
-
-TODO
-----
-
-*   Callback methods
