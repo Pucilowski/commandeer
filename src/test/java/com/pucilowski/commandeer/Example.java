@@ -32,12 +32,12 @@ public class Example {
                     }
                 })
                 .setOnError((input, error) -> //will be called when given bad input
-                        System.out.println("\terror (callback): " + error + " for input: " + input))
+                        System.out.println("error (callback): " + error + ", input: " + input))
                 .create();
 
         //register command with callback
         cmd.registerCommand(CMD, (cmdIn) ->
-                System.out.println("\tcmdIn (callback): " + cmdIn));
+                System.out.println("cmdIn (callback): " + cmdIn));
         //or one without
         cmd.registerCommand(CMD2);
     }
@@ -65,7 +65,7 @@ public class Example {
             CommandInput cmdIn = cmd.parse(input);
 
             //check out what's what
-            System.out.println("\tcmdIn: " + cmdIn.toString());
+            System.out.println("cmdIn: " + cmdIn.toString());
 
             // the specific alias that was used
             String alias = cmdIn.getAlias();
@@ -78,7 +78,7 @@ public class Example {
                 cmdIn.getArgAsInteger("arg2");
 
         } catch (CommandInputException e) {
-            System.out.println("\terror: " + e.getMessage() + " for input: " + input);
+            System.out.println("error: " + e.getMessage() + ", input: " + input);
         }
     }
 

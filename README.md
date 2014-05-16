@@ -36,7 +36,7 @@ Commandeer cmd = new Commandeer.Factory()
             }
         })
         .setOnError((input, error) -> //will be called when given bad input
-                System.out.println("\terror (callback): " + error + " for input: " + input))
+                System.out.println("\terror (callback): " + error + ", input: " + input))
         .create();
 
 //register command with callback
@@ -85,7 +85,7 @@ public void processInput(String input) {
             cmdIn.getArgAsInteger("arg2");
 
     } catch (CommandInputException e) {
-        System.out.println("\terror: " + e.getMessage() + " for input: " + input);
+        System.out.println("\terror: " + e.getMessage() + ", input: " + input);
     }
 }
 ```
