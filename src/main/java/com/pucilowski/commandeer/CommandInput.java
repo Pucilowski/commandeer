@@ -24,10 +24,10 @@ public class CommandInput {
     private final String alias;
     private final Map<String, Object> args;
 
-    protected CommandInput(Command def, String alias,Map<String, Object> args ) {
+    protected CommandInput(Command def, String alias, Map<String, Object> args) {
         this.def = def;
-        this.alias=alias;
-        this.args=args;
+        this.alias = alias;
+        this.args = args;
     }
 
     public Command getCommand() {
@@ -68,20 +68,20 @@ public class CommandInput {
 
     @Override
     public String toString() {
-        return "Command{" +
-                "alias='" + alias + '\'' +
-                ", args=" + descriptiveArgMap() +
-                '}';
-    }
+        StringBuilder sb = new StringBuilder();
 
-    private TreeMap<String, Object> descriptiveArgMap() {
-        TreeMap<String, Object> types = new TreeMap<>();
+        sb.append(alias);
 
         for (Map.Entry<String, Object> entry : args.entrySet()) {
-            String type = entry.getValue().getClass().getSimpleName();
-            types.put(entry.getKey() + " (" + type + ")", entry.getValue());
+            sb.append(", ");
+
+            String name = entry.getKey();
+            Object value = entry.getValue();
+            String type = value.getClass().getSimpleName();
+
+            sb.append(name).append(": ").append(value).append(" (").append(type).append(")");
         }
 
-        return types;
+        return sb.toString();
     }
 }

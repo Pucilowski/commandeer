@@ -92,8 +92,8 @@ public void processInput(String input) {
 
 The result of the above inputs would give
 ```
-cmdIn (callback): Command{alias='cmd', args={arg1 (String)=red}}
-error (callback): 'black' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "black") for input: !cmd red black
-cmdIn: Command{alias='cmd2', args={arg1 (String)=red, arg2 (Integer)=42, arg3 (Double)=3.141, arg4 (Date)=Thu Jan 01 22:52:11 GMT 1970}}
-error: 'water' is not a valid argument value for arg4:time (java.lang.RuntimeException: Unparseable date: "water") for input: !cmd2 red 42 3.141 water
+cmdIn (callback): cmd, arg1: red (String)
+error (callback): 'black' is not a valid argument value for arg2:int (java.lang.NumberFormatException: For input string: "black"), input: !cmd red black
+cmdIn: cmd2, arg1: red (String), arg2: 42 (Integer), arg3: 3.141 (Double), arg4: Thu Jan 01 22:52:11 GMT 1970 (Date)
+error: 'water' is not a valid argument value for arg4:time (java.lang.RuntimeException: Unparseable date: "water"), input: !cmd2 red 42 3.141 water
 ```

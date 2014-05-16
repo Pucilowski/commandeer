@@ -110,7 +110,7 @@ public class Commandeer {
     public CommandInput parse(String input, String prefix) throws CommandInputException {
         InputPreParser.PreParsed preParsed = inputPreParser.preparse(input, prefix);
         if (preParsed == null) {
-            throw new CommandInputException("Could not preprocess input '" + input + "'");
+            throw new CommandInputException("Could not pre-parse input '" + input + "'");
         }
 
         String alias = preParsed.getAlias();

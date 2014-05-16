@@ -11,8 +11,6 @@ public interface InputPreParser {
         String alias;
         String argString;
 
-        String[] args;
-
         public PreParsed(String alias, String argString) {
             this.alias = alias;
             this.argString = argString;
