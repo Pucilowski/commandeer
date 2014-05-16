@@ -41,7 +41,7 @@ command|cmd <arg1:text> <arg2:int> [arg3:double] [arg4:time]
 The first part defines the command aliases, either a single alphanumeric word
 or multiple separated by pipe characters. What follows is the parameters,
 expressed as their name and type separated by a colon. Required arguments
-are enclosed in angle brackets while required ones in square brackets.
+are enclosed in angle brackets while optional ones in square brackets.
 
 ### Register and execute
 
