@@ -12,8 +12,6 @@ import java.util.Optional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Param {
-    public String value();
-    //public boolean optional() default false;
+    public String name();
     public String def() default "";
-
 }

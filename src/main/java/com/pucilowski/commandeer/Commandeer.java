@@ -72,7 +72,7 @@ public class Commandeer {
 
             if (p.isAnnotationPresent(Param.class)) {
                 Param param = p.getAnnotation(Param.class);
-                name = param.value();
+                name = param.name();
 
                 String defaultArg = param.def();
                 if (defaultArg.length() > 0) {

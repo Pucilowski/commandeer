@@ -19,6 +19,22 @@ public class DefaultCommandParser implements CommandParser {
     }
 
     @Override
+    public String formatCommand(Command cmd) {
+        StringBuilder sb = new StringBuilder();
+
+        String aliases = formatAliases(cmd.getAliases());
+        sb.append(aliases);
+
+        for (Parameter param : cmd.getParameters()) {
+            sb.append(formatParameter(param)).append(" ");
+        }
+
+        sb.trimToSize();
+
+        return sb.toString();
+    }
+
+    @Override
     public String[] parseAliases(String format) {
         String[] aliases = format.split("\\|");
 
@@ -32,23 +48,13 @@ public class DefaultCommandParser implements CommandParser {
     }
 
     @Override
-    public String formatCommand(Command cmd) {
+    public String formatAliases(String[] aliases) {
         StringBuilder sb = new StringBuilder();
 
-        String[] aliases = cmd.getAliases();
         for (int i = 0; i < aliases.length; i++) {
-            String alias = aliases[i];
-
-            sb.append(alias);
-
-            sb.append(i < aliases.length - 1 ? "|" : " ");
+            sb.append(aliases[i])
+                    .append(i < aliases.length - 1 ? "|" : " ");
         }
-
-        for (Parameter param : cmd.getParameters()) {
-            sb.append(formatParameter(param)).append(" ");
-        }
-
-        sb.trimToSize();
 
         return sb.toString();
     }
@@ -56,11 +62,9 @@ public class DefaultCommandParser implements CommandParser {
 
     //private final char[] ENCLOSURE_REQUIRED = {'<','>'};
     //private final char[] ENCLOSURE_OPTIONAL = {'[',']'};
-
     //(\w+)(:?(\w+)?)
     //(<|\[?)(\w+)(:?(\w+)?)(>|\]?)
     private static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)(:?(\\w+)?)");
-
     @Override
     public Parameter parseParameter(final String format) {
         char open = format.charAt(0);

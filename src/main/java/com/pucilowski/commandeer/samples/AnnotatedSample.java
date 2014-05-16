@@ -46,14 +46,14 @@ public class AnnotatedSample {
 
     @Cmd({"command", "cmd"})
     public void doCommand(String arg1, Integer arg2,
-                          @Param(value = "three", def = "4.11") Double arg3,
-                          @Param(value = "four", def = "12:11:30") Date arg4) {
+                          @Param(name = "three", def = "4.11") Double arg3,
+                          @Param(name = "four", def = "12:11:30") Date arg4) {
         System.out.println("\tcmd: " + arg1 + ", " + arg2 + ", " + arg3 + ", " + arg4);
     }
 
     @Cmd({"command2", "cmd2"})
-    public void doCommand2(@Param("one") String str,
-                           @Param(value = "two", def = "123") Integer integer) {
+    public void doCommand2(@Param(name="one") String str,
+                           @Param(name = "two", def = "123") Integer integer) {
         System.out.println("\tcmd2: " + str + ", " + integer);
     }
 
