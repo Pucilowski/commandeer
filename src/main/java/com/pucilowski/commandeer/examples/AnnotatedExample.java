@@ -1,4 +1,4 @@
-package com.pucilowski.commandeer.samples;
+package com.pucilowski.commandeer.examples;
 
 import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.annotations.Cmd;
@@ -14,14 +14,14 @@ import java.util.Date;
  * Created by martin on 16/05/14.
  */
 
-public class AnnotatedSample {
+public class AnnotatedExample {
 
     Commandeer cmd;
 
-    public AnnotatedSample() {
+    public AnnotatedExample() {
         cmd = new Commandeer.Builder()
                 .setDefaultPrefix("!")
-                .setOnError((def, input, error)
+                .setErrorListener((def, input, error)
                         -> System.out.println("\terror: " + error + ", input: " + input))
                 .addType("time", new TypeParser<Date>(Date.class) {
                     @Override
@@ -42,7 +42,7 @@ public class AnnotatedSample {
 
         Command def = cmd.getCommand("cmd");
 
-        System.out.println("format: " + cmd.getCmdParser().formatCommand(def));
+        System.out.println("format: " + cmd.getCommandParser().formatCommand(def));
         for (String input : inputs) {
             System.out.println("input: " + input);
             cmd.execute(input);
@@ -74,6 +74,6 @@ public class AnnotatedSample {
 
 
     public static void main(String[] args) {
-        new AnnotatedSample();
+        new AnnotatedExample();
     }
 }

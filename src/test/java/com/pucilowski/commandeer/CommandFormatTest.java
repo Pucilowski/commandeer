@@ -87,7 +87,7 @@ public class CommandFormatTest {
         Commandeer cmd = new Commandeer.Builder().create();
 
         try {
-            cmd.parseCommand(format);
+            cmd.defineCommand(format);
             if (!valid) fail("command format '" + format + " should be invalid");
         } catch (CommandFormatException e) {
             //System.out.println("Exc: " + e.getMessage());

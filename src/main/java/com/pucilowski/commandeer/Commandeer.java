@@ -2,8 +2,8 @@ package com.pucilowski.commandeer;
 
 import com.pucilowski.commandeer.annotations.Cmd;
 import com.pucilowski.commandeer.annotations.Param;
-import com.pucilowski.commandeer.callbacks.CommandError;
-import com.pucilowski.commandeer.callbacks.CommandExecutor;
+import com.pucilowski.commandeer.callbacks.ErrorListener;
+import com.pucilowski.commandeer.callbacks.InputListener;
 import com.pucilowski.commandeer.exception.InvalidCommandException;
 import com.pucilowski.commandeer.processing.impl.DefaultInputParser;
 import com.pucilowski.commandeer.structure.*;
@@ -28,22 +28,26 @@ public class Commandeer {
 
     private final String defaultPrefix;
     private final Map<String, TypeParser> types;
-    private final CommandError onError;
+    private final ErrorListener errorListener;
 
     private final List<Command> cmds = new ArrayList<>();
     private final Map<String, Command> cmdsAliased = new TreeMap<>();
 
-    private Commandeer(
-            CommandParser cmdParser, InputParser inputParser,
-            String defaultPrefix, Map<String, TypeParser> types, CommandError onError) {
+    private Commandeer(CommandParser cmdParser, InputParser inputParser,
+                       String defaultPrefix, Map<String, TypeParser> types,
+                       ErrorListener errorListener) {
         this.types = types;
         this.defaultPrefix = defaultPrefix;
         this.cmdParser = cmdParser;
         this.inputParser = inputParser;
-        this.onError = onError;
+        this.errorListener = errorListener;
     }
 
-    //extract annotated commands
+    /**
+     * Registers methods annotated with @see Cmd as commands.
+     *
+     * @param object The Java object to look for commands in.
+     */
     public void extractCommands(Object object) {
         Class cls = object.getClass();
 
@@ -94,7 +98,7 @@ public class Commandeer {
         return addCommand(aliases, args, new JavaExecutor(object, method));
     }
 
-    public static TypeParser getTypeParser(Commandeer cmd, Class p) {
+    private static TypeParser getTypeParser(Commandeer cmd, Class p) {
         for (Map.Entry<String, TypeParser> entry : cmd.getTypes().entrySet()) {
             TypeParser tp = entry.getValue();
 
@@ -112,7 +116,7 @@ public class Commandeer {
         return null;
     }
 
-    public static String getArgumentType(Commandeer cmd, Class p) {
+    private static String getArgumentType(Commandeer cmd, Class p) {
         for (Map.Entry<String, TypeParser> entry : cmd.getTypes().entrySet()) {
             TypeParser tp = entry.getValue();
 
@@ -130,8 +134,14 @@ public class Commandeer {
         return null;
     }
 
-    //text defined commands
-    public Command defineCommand(String format, CommandExecutor executor) {
+    /**
+     * Registers command by parsing a signature string.
+     *
+     * @param format   Command signature string
+     * @param executor Callback method
+     * @return The parsed command
+     */
+    public Command defineCommand(String format, InputListener executor) {
         List<String> parts = new ArrayList<>(Arrays.asList(format.split(" ")));
         if (parts.size() == 0) {
             throw new CommandFormatException("Command format not specified");
@@ -174,21 +184,29 @@ public class Commandeer {
         return addCommand(aliases, parameters, executor);
     }
 
-    public Command parseCommand(String format) {
+    /**
+     * Registers command with no callback
+     *
+     * @param format Command signature string
+     * @return The parsed command
+     */
+    public Command defineCommand(String format) {
         return defineCommand(format, null);
     }
 
     /**
-     * checks rules for valid commands and adds them if successful
-     * @param aliases
-     * @param parameters
-     * @param exec
-     * @return
+     * Validates the command components and assembles the final object.
+     * Also checks if command is valid in the context of Commandeer instance, i.e. no alias clashes.
+     * Adds command starts listening for it if successful.
+     *
+     * @param aliases    Names by which command can be triggered
+     * @param parameters Command parameters
+     * @param exec       Callback method
+     * @return The fully assembled command
      */
-    private Command addCommand(String[] aliases, Parameter[] parameters, CommandExecutor exec) {
+    public Command addCommand(String[] aliases, Parameter[] parameters, InputListener exec) {
         TreeSet<String> argNames = new TreeSet<>();
 
-        // aliases
         if (aliases == null) throw new CommandFormatException("Failed to parse command aliases");
         for (String alias : aliases) {
             if (cmdsAliased.containsKey(alias)) {
@@ -224,53 +242,91 @@ public class Commandeer {
         return def;
     }
 
+    /**
+     * Returns command corresponding to given alias
+     *
+     * @param alias Command alias
+     * @return The command
+     */
     public Command getCommand(String alias) {
         return cmdsAliased.get(alias);
     }
 
+    /**
+     * Takes string command input and determines which command it should call.
+     * Parses arguments into their appropriate types and makes sure all required
+     * ones are present. If successful returns a CommandInput instance which can be
+     * queried for parameter values.
+     *
+     * @param input  Input to run as a command
+     * @param prefix If the command is prefixed with anything.
+     * @return The parsed command input
+     * @throws CommandInputException
+     * @throws InvalidCommandException
+     */
     public CommandInput parseInput(String input, String prefix) throws CommandInputException, InvalidCommandException {
         InputParser.PreParsed preParsed = inputParser.preParse(input, prefix);
-        if (preParsed == null) {
+        if (preParsed == null)
             throw new InvalidCommandException("Invalid command input: '" + input + "'");
-        }
 
         String alias = preParsed.getAlias();
-
         Command def = cmdsAliased.get(alias);
         if (def == null) throw new InvalidCommandException("Invalid command input: '" + input + "'");
 
         Map<String, Object> argMap = inputParser.parseArguments(this, def, preParsed.getArgString());
-
         return new CommandInput(def, preParsed.getAlias(), argMap);
     }
 
+    /**
+     * Calls @see parseInput with defaultPrefix.
+     *
+     * @param input Input to run as a command
+     * @return The parsed command input
+     * @throws CommandInputException
+     * @throws InvalidCommandException
+     */
     public CommandInput parseInput(String input) throws CommandInputException, InvalidCommandException {
         return parseInput(input, defaultPrefix);
     }
 
+    /**
+     * Takes input and uses @see parseInput to process.
+     * Upon bad command input will call the error callback
+     * (set using @see Commandeer.Builder#setErrorListener)
+     * If input is valid will execute the relevant callback
+     * or Java method.
+     *
+     * @param input  Input to run as a command
+     * @param prefix If the command is prefixed with anything.
+     */
     public void execute(String input, String prefix) {
         CommandInput in;
         try {
             in = parseInput(input, prefix);
             Command def = in.getCommand();
-            CommandExecutor cb = def.getExecutor();
+            InputListener cb = def.getExecutor();
             if (cb != null) cb.execute(in);
         } catch (InvalidCommandException e) {
-            onError.onError(null, input, e.getMessage());
+            errorListener.onError(null, input, e.getMessage());
         } catch (CommandInputException e) {
             InputParser.PreParsed preParsed = inputParser.preParse(input, prefix);
             String alias = preParsed.getAlias();
 
             Command def = cmdsAliased.get(alias);
-            onError.onError(def, input, e.getMessage());
+            errorListener.onError(def, input, e.getMessage());
         }
     }
 
+    /**
+     * Calls @see execute with defaultPrefix.
+     *
+     * @param input Input to run as a command
+     */
     public void execute(String input) {
         execute(input, defaultPrefix);
     }
 
-    public CommandParser getCmdParser() {
+    public CommandParser getCommandParser() {
         return cmdParser;
     }
 
@@ -291,7 +347,7 @@ public class Commandeer {
 
         private String defaultPrefix = null;
         private Map<String, TypeParser> argTypes = new HashMap<>();
-        private CommandError onError = (def, input, error) -> System.out.println("bad input: '" + error + "' (" + input + ")");
+        private ErrorListener error = (def, input, error) -> System.out.println("bad input: '" + error + "' (" + input + ")");
 
         public Builder() {
             argTypes.put("text", DefaultTypes.STRING);
@@ -315,12 +371,12 @@ public class Commandeer {
             return this;
         }
 
-        public Builder clearArgTypes() {
+        public Builder clearTypes() {
             argTypes.clear();
             return this;
         }
 
-        public Builder setArgTypes(Map<String, TypeParser> argTypes) {
+        public Builder setTypes(Map<String, TypeParser> argTypes) {
             this.argTypes = argTypes;
             return this;
         }
@@ -330,13 +386,13 @@ public class Commandeer {
             return this;
         }
 
-        public Builder setOnError(CommandError onError) {
-            this.onError = onError;
+        public Builder setErrorListener(ErrorListener error) {
+            this.error = error;
             return this;
         }
 
         public Commandeer create() {
-            return new Commandeer(commandParser, inputParser, defaultPrefix, argTypes, onError);
+            return new Commandeer(commandParser, inputParser, defaultPrefix, argTypes, error);
         }
     }
 

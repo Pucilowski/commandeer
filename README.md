@@ -78,6 +78,7 @@ any types beyond the stock ones - text, int and double.
 Below is a Commandeer instance built to handle a new type - `time`.
 It specifies the Java object it maps to and gives instructions on
 how to convert string input to this class.
+
 ```Java
 cmd = new Commandeer.Builder()
         .addType("time", new TypeParser<Date>(Date.class) {
@@ -96,6 +97,6 @@ cmd = new Commandeer.Builder()
 
 ### More
 
-Check out [`AnnotatedSample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/samples/AnnotatedSample.java) 
-to see annotated methods, or [`ClassicSample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/samples/ClassicSample.java)
+Check out [`AnnotatedExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/AnnotatedExample.java) 
+to see annotated methods, or [`ClassicExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/ClassicExample.java)
 to see the original format strings in action.

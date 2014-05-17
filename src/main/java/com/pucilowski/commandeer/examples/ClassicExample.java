@@ -1,4 +1,4 @@
-package com.pucilowski.commandeer.samples;
+package com.pucilowski.commandeer.examples;
 
 import com.pucilowski.commandeer.CommandInput;
 import com.pucilowski.commandeer.Commandeer;
@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by martin on 15/05/14.
  */
-public class ClassicSample {
+public class ClassicExample {
     //define the format of the doCommand
     private static final String CMD =
             "cmd <arg1:text> [arg2:int]";
@@ -23,7 +23,7 @@ public class ClassicSample {
 
     Commandeer cmd;
 
-    public ClassicSample() {
+    public ClassicExample() {
         //construct a new commandeer instance
         cmd = new Commandeer.Builder()
                 .setDefaultPrefix("!") //default input prefix
@@ -38,15 +38,13 @@ public class ClassicSample {
                         }
                     }
                 })
-                .setOnError((def, input, error) -> //will be called when given bad input
+                .setErrorListener((def, input, error) -> //will be called when given bad input
                         System.out.println("error (callback): " + error + ", input: " + input))
                 .create();
 
         //register doCommand with callback
         cmd.defineCommand(CMD, (cmdIn) ->
                 System.out.println("cmdIn (callback): " + cmdIn));
-        //or one without
-        cmd.parseCommand(CMD2);
     }
 
     public void demo() {
@@ -77,11 +75,11 @@ public class ClassicSample {
             // the specific alias that was used
             String alias = cmdIn.getAlias();
             //a map of the argument names and typed values
-            Map<String, Object> args = cmdIn.getArgs();
+            Map<String, Object> args = cmdIn.getArgumentMap();
 
             //argument values by name
             String arg1 = cmdIn.getArgAsString("arg1");
-            if (cmdIn.hasArg("arg2"))
+            if (cmdIn.hasArgument("arg2"))
                 cmdIn.getArgAsInteger("arg2");
 
         } catch (CommandInputException e) {
@@ -92,7 +90,7 @@ public class ClassicSample {
     }
 
     public static void main(String[] args) {
-        ClassicSample ex = new ClassicSample();
+        ClassicExample ex = new ClassicExample();
         ex.demo();
     }
 

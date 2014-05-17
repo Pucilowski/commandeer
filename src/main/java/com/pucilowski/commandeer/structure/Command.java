@@ -1,7 +1,7 @@
 package com.pucilowski.commandeer.structure;
 
 import com.pucilowski.commandeer.CommandInput;
-import com.pucilowski.commandeer.callbacks.CommandExecutor;
+import com.pucilowski.commandeer.callbacks.InputListener;
 import com.pucilowski.commandeer.processing.CommandParser;
 
 import java.util.Arrays;
@@ -14,10 +14,10 @@ public class Command {
 
     private final String[] aliases;
     private final Parameter[] parameters;
-    private final CommandExecutor executor;
+    private final InputListener executor;
 
     public Command(String[] aliases, Parameter[] parameters,
-                   CommandExecutor executor) {
+                   InputListener executor) {
         this.aliases = aliases;
         this.parameters = parameters;
         this.executor = executor;
@@ -31,7 +31,7 @@ public class Command {
         return parameters;
     }
 
-    public CommandExecutor getExecutor() {
+    public InputListener getExecutor() {
         return executor;
     }
 

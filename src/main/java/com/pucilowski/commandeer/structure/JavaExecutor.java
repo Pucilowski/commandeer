@@ -1,16 +1,15 @@
 package com.pucilowski.commandeer.structure;
 
 import com.pucilowski.commandeer.CommandInput;
-import com.pucilowski.commandeer.callbacks.CommandExecutor;
+import com.pucilowski.commandeer.callbacks.InputListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Created by martin on 16/05/14.
  */
-public class JavaExecutor implements CommandExecutor {
+public class JavaExecutor implements InputListener {
 
     private final Object object;
     private final Method method;
@@ -28,8 +27,8 @@ public class JavaExecutor implements CommandExecutor {
         for (int i = 0; i < params.length; i++) {
             Parameter param = params[i];
 
-            if (cmdIn.hasArg(param.getName())) {
-                args[i] = cmdIn.getArg(param.getName());
+            if (cmdIn.hasArgument(param.getName())) {
+                args[i] = cmdIn.getArgument(param.getName());
             } else {
                 args[i] = cmdIn.getCommand().getParameters()[i].getDefault();
             }

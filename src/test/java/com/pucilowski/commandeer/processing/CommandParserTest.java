@@ -1,4 +1,4 @@
-package com.pucilowski.commandeer.processing.format;
+package com.pucilowski.commandeer.processing;
 
 import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.structure.Parameter;
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by martin on 16/05/14.
  */
-public class DefaultParameterParserTest {
+public class CommandParserTest {
 
     static final Commandeer cmd = new Commandeer.Builder().create();
 

@@ -15,7 +15,7 @@ public class CommandInputTest {
     @Test
     public void badInputTest() {
         Commandeer cmd = new Commandeer.Builder().create();
-        cmd.parseCommand(FORMAT);
+        cmd.defineCommand(FORMAT);
 
         final String[] inputs = {
                 "",
@@ -36,7 +36,7 @@ public class CommandInputTest {
     @Test
     public void requiredArgumentsTest() {
         Commandeer cmd = new Commandeer.Builder().create();
-        cmd.parseCommand(FORMAT);
+        cmd.defineCommand(FORMAT);
 
         final String[] inputs = {
                 "!cmd red 123",

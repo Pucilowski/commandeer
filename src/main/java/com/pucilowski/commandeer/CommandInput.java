@@ -9,7 +9,6 @@ import java.util.Map;
  */
 public class CommandInput {
 
-    //private final Commandeer cmd;
     private final Command def;
 
     private final String alias;
@@ -33,15 +32,20 @@ public class CommandInput {
         return args.size();
     }
 
-    public Map<String, Object> getArgs() {
+    public Map<String, Object> getArgumentMap() {
         return args;
     }
 
-    public boolean hasArg(String name) {
+    public boolean hasArgument(String name) {
         return args.containsKey(name);
     }
 
-    public Object getArg(String name) {
+    /**
+     * Returns the named parameter value
+     * @param name Parameter name
+     * @return Argument
+     */
+    public Object getArgument(String name) {
         return args.get(name);
     }
 
