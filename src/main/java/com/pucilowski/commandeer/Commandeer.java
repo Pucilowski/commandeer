@@ -243,6 +243,14 @@ public class Commandeer {
     }
 
     /**
+     * Returns all registered commands
+     * @return Commands
+     */
+    public Command[] getCommands() {
+        return cmds.toArray(new Command[cmds.size()]);
+    }
+
+    /**
      * Returns command corresponding to given alias
      *
      * @param alias Command alias
@@ -337,6 +345,8 @@ public class Commandeer {
     public Map<String, TypeParser> getTypes() {
         return types;
     }
+
+
 
     /**
      * Created by martin on 15/05/14.
