@@ -2,6 +2,7 @@ package com.pucilowski.commandeer;
 
 import com.pucilowski.commandeer.exception.CommandInputException;
 import com.pucilowski.commandeer.exception.InvalidCommandException;
+import com.pucilowski.commandeer.structure.CommandInput;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -244,6 +244,7 @@ public class Commandeer {
 
     /**
      * Returns all registered commands
+     *
      * @return Commands
      */
     public Command[] getCommands() {
@@ -334,10 +335,26 @@ public class Commandeer {
         execute(input, defaultPrefix);
     }
 
+    /**
+     * Returns commandParser instance. Used to parse text command
+     * signatures into Command objects and vice versa.
+     *
+     * @return parser
+     * @see com.pucilowski.commandeer.processing.CommandParser
+     * @see com.pucilowski.commandeer.structure.Command
+     */
     public CommandParser getCommandParser() {
         return cmdParser;
     }
 
+    /**
+     * Returns inputParser instance. Used to parse text command
+     * input into CommandInput object and vice versa.
+     *
+     * @return parser
+     * @see com.pucilowski.commandeer.processing.InputParser
+     * @see com.pucilowski.commandeer.structure.CommandInput
+     */
     public InputParser getInputParser() {
         return inputParser;
     }
@@ -345,7 +362,6 @@ public class Commandeer {
     public Map<String, TypeParser> getTypes() {
         return types;
     }
-
 
 
     /**

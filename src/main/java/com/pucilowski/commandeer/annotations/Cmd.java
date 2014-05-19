@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Cmd {
     String[] value();
+    String description() default "";
 }

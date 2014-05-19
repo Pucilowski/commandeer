@@ -1,6 +1,4 @@
-package com.pucilowski.commandeer;
-
-import com.pucilowski.commandeer.structure.Command;
+package com.pucilowski.commandeer.structure;
 
 import java.util.Map;
 
@@ -14,7 +12,7 @@ public class CommandInput {
     private final String alias;
     private final Map<String, Object> args;
 
-    protected CommandInput(Command def, String alias, Map<String, Object> args) {
+    public CommandInput(Command def, String alias, Map<String, Object> args) {
         this.def = def;
         this.alias = alias;
         this.args = args;

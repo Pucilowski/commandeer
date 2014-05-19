@@ -1,6 +1,6 @@
 package com.pucilowski.commandeer.examples;
 
-import com.pucilowski.commandeer.CommandInput;
+import com.pucilowski.commandeer.structure.CommandInput;
 import com.pucilowski.commandeer.Commandeer;
 import com.pucilowski.commandeer.exception.CommandInputException;
 import com.pucilowski.commandeer.exception.InvalidCommandException;

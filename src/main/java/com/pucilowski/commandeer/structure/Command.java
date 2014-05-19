@@ -1,6 +1,5 @@
 package com.pucilowski.commandeer.structure;
 
-import com.pucilowski.commandeer.CommandInput;
 import com.pucilowski.commandeer.callbacks.InputListener;
 import com.pucilowski.commandeer.processing.CommandParser;
 

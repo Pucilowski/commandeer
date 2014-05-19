@@ -98,5 +98,6 @@ cmd = new Commandeer.Builder()
 ### More
 
 Check out [`AnnotatedExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/AnnotatedExample.java) 
-to see annotated methods, or [`ClassicExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/ClassicExample.java)
-to see the original format strings in action.
+to see annotated methods, [`ClassicExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/ClassicExample.java)
+to see the original command signature strings, or [`CliExample`](https://github.com/Pucilowski/commandeer/blob/master/src/main/java/com/pucilowski/commandeer/examples/CliExample.java)
+for command-line implementation example.
