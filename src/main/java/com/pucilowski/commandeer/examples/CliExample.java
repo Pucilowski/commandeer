@@ -40,13 +40,10 @@ public class CliExample {
 
         //add commands from annotations
         cmd.extractCommands(this);
-        //Command def = cmd.getCommand("cmd");
 
         System.out.println("Running Commandeer command-line input example!");
         System.out.println("Here are the commands:");
-        for(Command c : cmd.getCommands()) {
-            System.out.println(cmd.getCommandParser().formatCommand(c));
-        }
+        cmd.printCommands(System.out);
 
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);

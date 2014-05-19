@@ -14,6 +14,7 @@ import com.pucilowski.commandeer.processing.CommandParser;
 import com.pucilowski.commandeer.processing.InputParser;
 import com.pucilowski.commandeer.processing.impl.DefaultCommandParser;
 
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -361,6 +362,16 @@ public class Commandeer {
 
     public Map<String, TypeParser> getTypes() {
         return types;
+    }
+
+    public void printCommands(PrintStream out) {
+        for (Command c : getCommands()) {
+            out.println(cmdParser.formatCommand(c));
+        }
+    }
+
+    public void printCommands() {
+        printCommands(System.out);
     }
 
 
